@@ -7,7 +7,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'ROMSFUN_THEME_VERSION', '1.0.0' );
+define( 'ROMSFUN_THEME_VERSION', '1.1.0' );
 
 /**
  * The theme reads catalogue data through the romsfun-core plugin. If that plugin is ever
@@ -96,11 +96,20 @@ add_action( 'after_setup_theme', 'romsfun_theme_setup' );
  * from search.
  */
 function romsfun_enqueue_assets(): void {
+	/*
+	 * Version the stylesheet by its modification time rather than the theme version. Bumping the
+	 * theme version by hand is easy to forget, and when it is forgotten the browser and the CDN
+	 * both keep serving the previous CSS — the change looks like it silently failed to apply.
+	 * filemtime makes every edit cache-bust itself.
+	 */
+	$css_path = get_template_directory() . '/assets/css/main.css';
+	$css_ver  = file_exists( $css_path ) ? (string) filemtime( $css_path ) : ROMSFUN_THEME_VERSION;
+
 	wp_enqueue_style(
 		'romsfun-main',
 		get_template_directory_uri() . '/assets/css/main.css',
 		array(),
-		ROMSFUN_THEME_VERSION
+		$css_ver
 	);
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {

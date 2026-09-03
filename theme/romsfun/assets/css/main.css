@@ -63,6 +63,7 @@
 
 body {
 	margin: 0;
+	overflow-x: clip;
 	background: var(--rf-bg);
 	color: var(--rf-text);
 	font-family: var(--rf-font);
@@ -92,6 +93,11 @@ h3 { font-size: 1rem; }
 .rf-wrap { max-width: var(--rf-wrap); margin-inline: auto; padding-inline: 16px; }
 
 /* ---------- Header ---------- */
+
+/* The WordPress admin bar is fixed at the top for logged-in users; without this offset the
+   sticky header slides underneath it and the logo is cut off. */
+.admin-bar .rf-header { top: 32px; }
+@media screen and (max-width: 782px) { .admin-bar .rf-header { top: 46px; } }
 
 .rf-header { background: var(--rf-header-bg); color: var(--rf-header-text); position: sticky; top: 0; z-index: 50; }
 .rf-header__inner { display: flex; align-items: center; gap: 20px; min-height: 62px; }
@@ -241,10 +247,15 @@ h3 { font-size: 1rem; }
 	text-transform: uppercase; color: var(--rf-brand);
 }
 
-/* Hero image is full-bleed, so it escapes the wrapper's padding via viewport units. */
+/*
+ * Full-bleed hero. `margin-inline: calc(50% - 50vw)` escapes the wrapper's padding.
+ * 100vw includes the scrollbar, so `overflow-x: clip` on the body absorbs the few pixels of
+ * overflow — `clip` rather than `hidden` because `hidden` on an ancestor silently breaks
+ * `position: sticky` on the header.
+ */
 .rf-hero__media {
 	position: relative;
-	width: 100vw; margin-left: 50%; transform: translateX(-50%);
+	width: 100vw; margin-inline: calc(50% - 50vw);
 	max-height: 420px; overflow: hidden;
 }
 .rf-hero__media img { width: 100%; height: 100%; max-height: 420px; object-fit: cover; object-position: center bottom; }
