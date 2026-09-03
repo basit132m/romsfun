@@ -7,6 +7,10 @@
 :root {
 	/* Brand. Change --rf-brand and the whole site follows. */
 	--rf-brand:        #e0175b;
+	--rf-header-bg:    var(--rf-brand);
+	--rf-header-text:  #ffffff;
+	--rf-footer-bg:    var(--rf-brand);
+	--rf-footer-text:  #ffffff;
 	--rf-brand-dark:   #b81049;
 	--rf-brand-soft:   #fdeaf1;
 
@@ -26,6 +30,7 @@
 	--rf-gap:          24px;
 
 	--rf-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+	--rf-font-size: 16px;
 }
 
 :root:not([data-theme="light"]) {
@@ -61,7 +66,7 @@ body {
 	background: var(--rf-bg);
 	color: var(--rf-text);
 	font-family: var(--rf-font);
-	font-size: 16px;
+	font-size: var(--rf-font-size);
 	line-height: 1.6;
 	-webkit-font-smoothing: antialiased;
 }
@@ -88,22 +93,23 @@ h3 { font-size: 1rem; }
 
 /* ---------- Header ---------- */
 
-.rf-header { background: var(--rf-brand); color: #fff; position: sticky; top: 0; z-index: 50; }
+.rf-header { background: var(--rf-header-bg); color: var(--rf-header-text); position: sticky; top: 0; z-index: 50; }
 .rf-header__inner { display: flex; align-items: center; gap: 20px; min-height: 62px; }
 
-.rf-logo { color: #fff; font-weight: 800; font-size: 1.05rem; letter-spacing: .02em; text-transform: uppercase; }
+.rf-logo, .rf-logo a { color: var(--rf-header-text); font-weight: 800; font-size: 1.05rem; letter-spacing: .02em; text-transform: uppercase; }
 .rf-logo:hover { text-decoration: none; opacity: .9; }
 
 .rf-nav { margin-inline: auto; }
 .rf-nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 5px; background: rgb(255 255 255 / .14); border-radius: var(--rf-radius-pill); }
-.rf-nav a { color: #fff; font-size: .9rem; font-weight: 500; padding: 8px 18px; border-radius: var(--rf-radius-pill); display: block; }
+.rf-nav a { color: var(--rf-header-text); font-size: .9rem; font-weight: 500; padding: 8px 18px; border-radius: var(--rf-radius-pill); display: block; }
 .rf-nav a:hover { background: rgb(255 255 255 / .16); text-decoration: none; }
 .rf-nav .current-menu-item > a { background: #fff; color: var(--rf-brand); font-weight: 600; }
 
 .rf-header__account {
 	width: 38px; height: 38px; display: grid; place-items: center; flex: none;
-	background: #fff; color: var(--rf-brand); border-radius: 50%; font-weight: 700;
+	background: var(--rf-header-text); color: var(--rf-header-bg); border-radius: 50%; font-weight: 700;
 }
+.rf-logo img { display: block; max-width: 200px; height: auto; }
 .rf-header__account:hover { text-decoration: none; }
 
 @media (max-width: 860px) {
@@ -212,8 +218,9 @@ h3 { font-size: 1rem; }
 
 /* ---------- Footer ---------- */
 
-.rf-footer { background: var(--rf-brand); color: #fff; margin-top: 56px; padding-block: 34px; text-align: center; }
-.rf-footer a { color: #fff; }
+.rf-footer { background: var(--rf-footer-bg); color: var(--rf-footer-text); margin-top: 56px; padding-block: 34px; text-align: center; }
+.rf-footer a { color: var(--rf-footer-text); }
+.rf-footer__tagline { margin: 0 0 14px; font-size: .9rem; opacity: .9; }
 .rf-footer__brand { font-weight: 800; text-transform: uppercase; letter-spacing: .02em; font-size: 1.05rem; display: inline-block; margin-bottom: 14px; }
 .rf-footer ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 26px; list-style: none; margin: 0 0 18px; padding: 0; font-size: .88rem; }
 .rf-footer__legal { font-size: .8rem; opacity: .82; margin: 0; }

@@ -21,9 +21,15 @@ defined( 'ABSPATH' ) || exit;
 
 <header class="rf-header">
 	<div class="rf-wrap rf-header__inner">
-		<a class="rf-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
-			<?php bloginfo( 'name' ); ?>
-		</a>
+		<?php if ( has_custom_logo() ) : ?>
+			<div class="rf-logo">
+				<?php the_custom_logo(); ?>
+			</div>
+		<?php else : ?>
+			<a class="rf-logo" href="<?php echo esc_url( home_url( '/' ) ); ?>">
+				<?php bloginfo( 'name' ); ?>
+			</a>
+		<?php endif; ?>
 
 		<nav class="rf-nav" aria-label="<?php esc_attr_e( 'Primary', 'romsfun' ); ?>">
 			<?php

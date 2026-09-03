@@ -25,17 +25,10 @@ defined( 'ABSPATH' ) || exit;
 		}
 		?>
 
-		<p class="rf-footer__legal">
-			<?php
-			printf(
-				/* translators: 1: start year, 2: current year, 3: site name */
-				esc_html__( 'Copyright © %1$s–%2$s %3$s — All rights reserved', 'romsfun' ),
-				'2026',
-				esc_html( gmdate( 'Y' ) ),
-				esc_html( get_bloginfo( 'name' ) )
-			);
-			?>
-		</p>
+		<?php $tagline = romsfun_get_option( 'footer_tagline' ); ?>
+		<p class="rf-footer__tagline"<?php echo $tagline ? '' : ' hidden'; ?>><?php echo esc_html( $tagline ); ?></p>
+
+		<p class="rf-footer__legal"><?php echo esc_html( romsfun_render_copyright() ); ?></p>
 	</div>
 </footer>
 

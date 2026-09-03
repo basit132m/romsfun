@@ -52,6 +52,7 @@ add_action( 'admin_notices', 'romsfun_core_dependency_notice' );
 require_once get_template_directory() . '/inc/breadcrumbs.php';
 require_once get_template_directory() . '/inc/schema.php';
 require_once get_template_directory() . '/inc/template-tags.php';
+require_once get_template_directory() . '/inc/customizer.php';
 
 function romsfun_theme_setup(): void {
 	add_theme_support( 'title-tag' );
@@ -59,6 +60,18 @@ function romsfun_theme_setup(): void {
 	add_theme_support( 'automatic-feed-links' );
 	add_theme_support( 'responsive-embeds' );
 	add_theme_support( 'html5', array( 'search-form', 'comment-form', 'comment-list', 'caption', 'style', 'script' ) );
+
+	// Logo is uploaded and swapped from Appearance > Customize > Site Identity, so changing it
+	// never requires touching a file.
+	add_theme_support(
+		'custom-logo',
+		array(
+			'height'      => 60,
+			'width'       => 240,
+			'flex-height' => true,
+			'flex-width'  => true,
+		)
+	);
 
 	// Box art is portrait and the LCP element on every ROM page, so it gets its own size rather
 	// than being scaled down from a landscape crop.

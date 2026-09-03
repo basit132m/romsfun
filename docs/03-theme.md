@@ -75,12 +75,39 @@ Upload `romsfun-theme.zip` via **Appearance → Themes → Add New → Upload Th
 - View source: one `<script type="application/ld+json">` containing `VideoGame` and `BreadcrumbList`
 - Paste the URL into Google's Rich Results Test — expect no errors
 
-## Changing the brand colour
+## Theme settings
 
-One line, at the top of `assets/css/main.css`:
+Everything visual is editable from **Appearance → Customize** — no file editing. Colours preview
+live as you drag the picker.
 
-```css
---rf-brand: #e0175b;
-```
+| Section | Controls |
+|---|---|
+| Site Identity | Logo upload, logo max width, site title, favicon |
+| RomsFun Theme → Brand Colours | Brand/accent, header background, header text, footer background, footer text |
+| RomsFun Theme → Page Colours | Page background, card background, borders, body text, muted text, colour scheme |
+| RomsFun Theme → Layout & Typography | Content width, corner radius, base font size, font family, sticky header |
+| RomsFun Theme → ROM Pages | Show checksums, show related, related count, download button text |
+| RomsFun Theme → Footer | Tagline, copyright text |
 
-Dark mode is derived from the same tokens and needs no separate maintenance.
+### How it works
+
+`main.css` defines every value as a CSS custom property. The Customizer emits an inline `:root`
+block overriding those properties. The stylesheet stays the single source of truth for *how* things
+are styled; settings only change *what values* it uses. Adding a setting means one entry in
+`romsfun_settings()`.
+
+### Two implementation details worth knowing
+
+**Light-mode overrides are wrapped in a `prefers-color-scheme: light` query, not applied to bare
+`:root`.** Inline styles load after the stylesheet, so an unguarded `:root` block would also win
+inside the dark-mode media query and silently break dark mode. Brand colours apply to both schemes;
+only the page palette is light-scoped.
+
+**The font picker defaults to System for a reason.** Selecting Inter, Poppins or Rubik adds a
+Google Fonts request that blocks text painting, which costs page-speed score. The control says so
+in its own description. No request is made on the default.
+
+### Colour scheme
+
+`auto` (default) respects each visitor's device preference. `light` or `dark` stamps `data-theme`
+on `<html>` and forces one.

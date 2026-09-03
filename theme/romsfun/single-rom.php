@@ -126,7 +126,7 @@ while ( have_posts() ) :
 							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
 								<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>
 							</svg>
-							<?php esc_html_e( 'Download ROM', 'romsfun' ); ?>
+							<span class="rf-btn__label"><?php echo esc_html( romsfun_get_option( 'download_label' ) ); ?></span>
 						</a>
 					<?php endif; ?>
 				</div>
@@ -152,7 +152,7 @@ while ( have_posts() ) :
 		// Almost nobody publishes checksums. They are genuinely useful to the reader and they are
 		// unique text on a page that would otherwise be a spec table — which is exactly the kind
 		// of thin-content problem that limits indexing at this scale.
-		if ( $checksums ) :
+		if ( $checksums && romsfun_get_option( 'show_checksums' ) ) :
 			?>
 			<section class="rf-section rf-card-surface">
 				<h2><?php esc_html_e( 'File Verification', 'romsfun' ); ?></h2>
@@ -168,9 +168,11 @@ while ( have_posts() ) :
 		<?php endif; ?>
 
 		<?php
-		$related = romsfun_related_roms( $post_id, 5 );
+		$related = romsfun_get_option( 'show_related' )
+			? romsfun_related_roms( $post_id, (int) romsfun_get_option( 'related_count' ) )
+			: null;
 
-		if ( $related->have_posts() ) :
+		if ( $related && $related->have_posts() ) :
 			?>
 			<section class="rf-section rf-card-surface">
 				<h2><?php esc_html_e( 'Related ROMs', 'romsfun' ); ?></h2>
