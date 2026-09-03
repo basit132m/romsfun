@@ -54,9 +54,13 @@ the server:
 
 ```bash
 # --- disable password + root SSH login ---
-sudo sed -i 's/^#\?PermitRootLogin.*/PermitRootLogin no/' /etc/ssh/sshd_config
-sudo sed -i 's/^#\?PasswordAuthentication.*/PasswordAuthentication no/' /etc/ssh/sshd_config
-sudo systemctl restart ssh
+sudo tee /etc/ssh/sshd_config.d/00-romsfun-hardening.conf >/dev/null <<'EOF'
+PermitRootLogin no
+PasswordAuthentication no
+KbdInteractiveAuthentication no
+PubkeyAuthentication yes
+EOF
+sudo sshd -t && sudo systemctl restart ssh
 
 # --- firewall ---
 sudo ufw default deny incoming
@@ -154,8 +158,11 @@ The 3 GB buffer pool is the single highest-value line in this runbook. It lets t
 
 ## 7. Redis object cache
 
+> **Already done on our box.** The Hostinger CloudPanel image ships Redis installed and running,
+> so skip the `apt install` line — only the tuning below is needed.
+
 ```bash
-sudo apt install -y redis-server
+sudo apt install -y redis-server    # no-op on the CloudPanel image
 sudo sed -i 's/^# *maxmemory .*/maxmemory 512mb/' /etc/redis/redis.conf
 sudo sed -i 's/^# *maxmemory-policy .*/maxmemory-policy allkeys-lru/' /etc/redis/redis.conf
 sudo systemctl enable --now redis-server

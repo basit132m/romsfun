@@ -14,6 +14,7 @@ schema, importers), and any scripts used to populate the catalogue.
 |---|---|
 | [docs/00-roadmap.md](docs/00-roadmap.md) | The full 9-phase build order, one line each |
 | [docs/01-foundation.md](docs/01-foundation.md) | **Step 1** — stack, hosting, theme, plugin shortlist |
+| [docs/server-facts.md](docs/server-facts.md) | Live server reference — IP, specs, stack, access |
 | [docs/01-server-setup-runbook.md](docs/01-server-setup-runbook.md) | **Step 1 runbook** — Hostinger KVM 2 → secured, tuned, empty WordPress |
 
 ## Status
