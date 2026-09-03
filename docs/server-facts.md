@@ -52,4 +52,33 @@ than adding another one.
 
 ## Domain
 
-`roms-fun.net` — registered at **Namecheap**. Not yet pointed at this box; going via Cloudflare DNS.
+Registrar **Namecheap**, DNS on **Cloudflare** (free plan). Verified resolving to `72.60.17.23`
+on 2026-09-03.
+
+| Record | Value | Proxy |
+|---|---|---|
+| `roms-fun.net` A | `72.60.17.23` | DNS only |
+| `www` CNAME | `roms-fun.net` | DNS only |
+
+Grey-clouded deliberately so Let's Encrypt can validate. **Turn proxying on only after the
+certificate is issued.**
+
+### Prior host
+
+The domain previously sat on a cPanel host (`104.207.79.4`, mail via `jellyfish.systems`). The
+account was empty — the site served a bare `Index of /` directory listing, so there was no content
+or ranking to preserve and no redirects were needed.
+
+Deleted 14 dead cPanel records: `cpanel`, `cpcalendars`, `cpcontacts`, `webdisk`, `whm` (A),
+`ftp` (CNAME), and the `_caldav*`/`_carddav*` SRV + TXT pairs.
+
+### Mail records — retained pending confirmation
+
+Kept until the owner confirms whether `@roms-fun.net` email is in use: 3x MX to
+`jellyfish.systems`, `default._domainkey` (DKIM), `_dmarc`, the SPF TXT, `_autodiscover._tcp`,
+and the `mail`/`webmail`/`autoconfig`/`autodiscover` A records.
+
+> The SPF record still authorises the old host (`ip4:104.207.79.2`). Harmless while no mail is
+> sent from the domain, but it must be corrected or removed before any mail is sent from this
+> server. Cloudflare's importer also orange-clouds mail A records by default, which breaks
+> delivery — all have been set back to DNS only.
