@@ -17,11 +17,13 @@ schema, importers), and any scripts used to populate the catalogue.
 | [docs/competitor-romsfun-com.md](docs/competitor-romsfun-com.md) | What romsfun.com actually runs, and where it is beatable |
 | [docs/server-facts.md](docs/server-facts.md) | Live server reference — IP, specs, stack, access |
 | [docs/01-server-setup-runbook.md](docs/01-server-setup-runbook.md) | **Step 1 runbook** — Hostinger KVM 2 → secured, tuned, empty WordPress |
+| [docs/02-content-architecture.md](docs/02-content-architecture.md) | **Step 2** — post types, taxonomies, URL structure, crawl control |
 
 ## Status
 
 - [x] Step 1a — Foundation & stack decisions (hosting: Hostinger VPS KVM 2)
 - [x] Step 1b — Server provisioned and hardened
 - [x] Step 1c — DNS, WordPress, SSL, tuning
-- [ ] Step 2 — Content architecture
+- [x] Step 2 — Content architecture (plugin written, awaiting install)
+- [ ] Step 3 — Data import
 - [ ] Step 3 onward — see roadmap
