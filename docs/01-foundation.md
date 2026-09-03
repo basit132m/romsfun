@@ -24,11 +24,21 @@ What you actually need:
 | NVMe storage | Index reads |
 | Server-level page cache (NGINX FastCGI / Varnish) | Serves anonymous traffic without booting PHP |
 
-**Recommended:** Cloudways (Vultr High Frequency, 4GB) or RunCloud/GridPane on a Hetzner or Vultr
-VPS. Both give you Redis and server-level caching. Budget roughly $30–60/month.
+**Chosen: Hostinger VPS KVM 2** — 2 vCPU, 8 GB RAM, 100 GB NVMe, 8 TB bandwidth.
 
-**Do not** put the ROM files on this server — see the constraint note in the roadmap, plus a
-single popular file will eat your bandwidth allowance in a day.
+Assessment against the requirements above:
+
+| Resource | KVM 2 | Verdict |
+|---|---|---|
+| RAM | 8 GB | Comfortable. Leaves room for a 3 GB InnoDB buffer pool + Redis + PHP-FPM. |
+| vCPU | 2 | The real constraint. Fine **provided** full-page caching is working, since cached hits barely touch PHP. Uncached filter queries are what will hurt. |
+| Storage | 100 GB NVMe | Plenty for metadata + box art. Would be nothing if ROM files lived here. |
+| Bandwidth | 8 TB | Generous for a metadata site. A single popular ROM file would eat it in days. |
+
+The CPU count makes Phase 7 (caching) load-bearing rather than optional, and the
+bandwidth/storage figures are the practical argument for keeping ROM files off this box.
+
+See [01-server-setup-runbook.md](01-server-setup-runbook.md) for the provisioning steps.
 
 ## 1.2 Theme
 
