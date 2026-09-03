@@ -53,6 +53,7 @@ require_once get_template_directory() . '/inc/breadcrumbs.php';
 require_once get_template_directory() . '/inc/schema.php';
 require_once get_template_directory() . '/inc/template-tags.php';
 require_once get_template_directory() . '/inc/customizer.php';
+require_once get_template_directory() . '/inc/search.php';
 
 function romsfun_theme_setup(): void {
 	add_theme_support( 'title-tag' );

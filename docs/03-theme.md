@@ -52,10 +52,49 @@ scattering them.
 text alternative on star ratings, real `<time datetime>`. Not a direct ranking factor, but it
 overlaps heavily with the semantic markup crawlers read.
 
+## Homepage
+
+`front-page.php`, in order: full-bleed hero image, an overlapping search panel, announcement,
+trending rows, latest grid. Every string, count and toggle is in **Customize → RomsFun Theme →
+Homepage**.
+
+### Search and filtering
+
+`inc/search.php`. A plain GET form — **no JavaScript at all**. That is deliberate:
+
+- It works before any script runs, so there is no interaction delay
+- Filtered views are real URLs that can be linked, shared and crawled
+- Zero JS cost against Core Web Vitals
+
+Filters map to `console`, `genre`, `collection` and `rom_type`, plus sorting by newest, downloads,
+rating, title or file size. Sorting by download count and file size works because those are stored
+as numbers rather than display strings.
+
+A hidden `post_type=rom` input scopes results to the catalogue — without it a search falls into
+global WordPress search and returns pages and blog posts alongside ROMs.
+
+### Crawl control — the part that matters
+
+Filtered views get `noindex, follow` and a canonical pointing at the clean archive, and `?sort=`
+is disallowed in robots.txt.
+
+Five filters with dozens of values each generate millions of crawlable combinations. Left
+indexable, Googlebot spends its crawl budget walking permutations and never reaches the ROM pages —
+the standard way large catalogue sites fail. `follow` is retained so link equity still flows to the
+ROMs being listed.
+
+WordPress's own `rel_canonical` is unhooked whenever we emit a filtered canonical, so a page never
+carries two competing canonical tags — Google resolves that conflict by ignoring both.
+
+### Hero image and LCP
+
+The hero is a real `<img>` with `fetchpriority="high"`, not a CSS background. Background images are
+discovered late — only once the stylesheet has parsed — and cannot be prioritised, which directly
+costs LCP on the most important page on the site.
+
 ## Deliberately not included yet
 
-- **Homepage** (`front-page.php`) — hero search, collection cards, popular/latest sections
-- **Faceted filter bar** — Step 5, needs the filtering engine chosen first
+- **Collections carousel** on the homepage (the "Best ROM collections" strip)
 - **Comments and ratings UI** — the schema is ready; the interface is not built
 - **Emulator template**
 - **Download mirrors** — one `download_url` for now; a repeater comes with the import work

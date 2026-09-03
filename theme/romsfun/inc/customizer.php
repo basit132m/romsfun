@@ -56,6 +56,22 @@ function romsfun_option_defaults(): array {
 		'download_label'     => __( 'Download ROM', 'romsfun' ),
 		'footer_tagline'     => '',
 		'copyright_text'     => '',
+
+		// Homepage.
+		'hero_image'           => 'https://roms-fun.net/wp-content/uploads/2026/09/hero.webp',
+		'hero_eyebrow'         => __( 'Play Retro ROMs', 'romsfun' ),
+		'hero_title_before'    => __( 'Play', 'romsfun' ),
+		'hero_title_highlight' => __( 'Video Game Roms', 'romsfun' ),
+		'hero_title_after'     => __( 'on your Computer or Phone', 'romsfun' ),
+		'hero_subtitle'        => __( 'Search, filter, and download your favourite retro games from thousands of ROMs curated for nostalgia lovers.', 'romsfun' ),
+		'announcement_enabled' => true,
+		'announcement_label'   => __( 'Announcement', 'romsfun' ),
+		'announcement_title'   => __( 'Welcome to RomsFun', 'romsfun' ),
+		'announcement_text'    => '',
+		'trending_title'       => __( 'Popular ROM', 'romsfun' ),
+		'trending_count'       => 10,
+		'latest_title'         => __( 'Latest ROM', 'romsfun' ),
+		'latest_count'         => 10,
 	);
 }
 
@@ -81,6 +97,7 @@ function romsfun_customize_register( WP_Customize_Manager $wp_customize ): void 
 		'romsfun_layout'  => __( 'Layout & Typography', 'romsfun' ),
 		'romsfun_rom'     => __( 'ROM Pages', 'romsfun' ),
 		'romsfun_footer'  => __( 'Footer', 'romsfun' ),
+		'romsfun_home'    => __( 'Homepage', 'romsfun' ),
 	);
 
 	$order = 10;
@@ -239,6 +256,77 @@ function romsfun_customize_register( WP_Customize_Manager $wp_customize ): void 
 			'type'        => 'text',
 		)
 	);
+
+	// --- Homepage --------------------------------------------------------
+
+	$wp_customize->add_setting(
+		'hero_image',
+		array(
+			'default'           => romsfun_option_defaults()['hero_image'],
+			'sanitize_callback' => 'esc_url_raw',
+		)
+	);
+	$wp_customize->add_control(
+		new WP_Customize_Image_Control(
+			$wp_customize,
+			'hero_image',
+			array(
+				'label'       => __( 'Hero Image', 'romsfun' ),
+				'description' => __( 'Wide banner across the top of the homepage. Use a WebP around 1920px wide — it is the largest element on the page, so its file size directly affects your page-speed score.', 'romsfun' ),
+				'section'     => 'romsfun_home',
+			)
+		)
+	);
+
+	$home_text = array(
+		'hero_eyebrow'         => array( __( 'Hero Eyebrow', 'romsfun' ), 'text' ),
+		'hero_title_before'    => array( __( 'Headline — before highlight', 'romsfun' ), 'text' ),
+		'hero_title_highlight' => array( __( 'Headline — highlighted words', 'romsfun' ), 'text' ),
+		'hero_title_after'     => array( __( 'Headline — after highlight', 'romsfun' ), 'text' ),
+		'hero_subtitle'        => array( __( 'Hero Subtitle', 'romsfun' ), 'textarea' ),
+		'announcement_label'   => array( __( 'Announcement Label', 'romsfun' ), 'text' ),
+		'announcement_title'   => array( __( 'Announcement Title', 'romsfun' ), 'text' ),
+		'trending_title'       => array( __( 'Trending Section Title', 'romsfun' ), 'text' ),
+		'latest_title'         => array( __( 'Latest Section Title', 'romsfun' ), 'text' ),
+	);
+
+	foreach ( $home_text as $key => $conf ) {
+		$wp_customize->add_setting(
+			$key,
+			array(
+				'default'           => romsfun_option_defaults()[ $key ],
+				'sanitize_callback' => 'sanitize_text_field',
+			)
+		);
+		$wp_customize->add_control( $key, array( 'label' => $conf[0], 'section' => 'romsfun_home', 'type' => $conf[1] ) );
+	}
+
+	$wp_customize->add_setting( 'announcement_enabled', array( 'default' => true, 'sanitize_callback' => 'rest_sanitize_boolean' ) );
+	$wp_customize->add_control( 'announcement_enabled', array( 'label' => __( 'Show Announcement Section', 'romsfun' ), 'section' => 'romsfun_home', 'type' => 'checkbox' ) );
+
+	$wp_customize->add_setting( 'announcement_text', array( 'default' => '', 'sanitize_callback' => 'wp_kses_post' ) );
+	$wp_customize->add_control(
+		'announcement_text',
+		array(
+			'label'       => __( 'Announcement Content', 'romsfun' ),
+			'description' => __( 'Basic HTML allowed. Leave blank to hide the section.', 'romsfun' ),
+			'section'     => 'romsfun_home',
+			'type'        => 'textarea',
+		)
+	);
+
+	foreach ( array( 'trending_count' => __( 'Trending — how many', 'romsfun' ), 'latest_count' => __( 'Latest — how many', 'romsfun' ) ) as $key => $label ) {
+		$wp_customize->add_setting( $key, array( 'default' => 10, 'sanitize_callback' => 'absint' ) );
+		$wp_customize->add_control(
+			$key,
+			array(
+				'label'       => $label,
+				'section'     => 'romsfun_home',
+				'type'        => 'number',
+				'input_attrs' => array( 'min' => 3, 'max' => 24, 'step' => 1 ),
+			)
+		);
+	}
 
 	// Live-preview bindings for the pieces postMessage handles.
 	if ( isset( $wp_customize->selective_refresh ) ) {

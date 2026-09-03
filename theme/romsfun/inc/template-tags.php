@@ -131,3 +131,67 @@ function romsfun_related_roms( int $post_id, int $limit = 5 ): WP_Query {
 		)
 	);
 }
+
+/**
+ * Wide list row used by the trending section — thumbnail, title, pills, downloads and size.
+ * A distinct shape from the grid card so the two sections read differently on the homepage.
+ */
+function romsfun_rom_row( int $post_id ): void {
+	$downloads = (int) romsfun_get_field( 'download_count', $post_id );
+	$bytes     = (int) romsfun_get_field( 'file_size_bytes', $post_id );
+	?>
+	<article class="rf-row">
+		<a class="rf-row__media" href="<?php echo esc_url( get_permalink( $post_id ) ); ?>" tabindex="-1" aria-hidden="true">
+			<?php
+			if ( has_post_thumbnail( $post_id ) ) {
+				echo get_the_post_thumbnail( $post_id, 'rom-card', array( 'loading' => 'lazy', 'decoding' => 'async' ) );
+			} else {
+				echo '<span class="rf-card__placeholder"></span>';
+			}
+			?>
+		</a>
+
+		<div class="rf-row__body">
+			<h3 class="rf-row__title">
+				<a href="<?php echo esc_url( get_permalink( $post_id ) ); ?>"><?php echo esc_html( get_the_title( $post_id ) ); ?></a>
+			</h3>
+			<?php romsfun_term_pills( $post_id, array( 'console', 'collection', 'rom_type' ), 2 ); ?>
+		</div>
+
+		<div class="rf-row__stats">
+			<?php if ( $downloads ) : ?>
+				<span class="rf-chip"><?php echo esc_html( number_format_i18n( $downloads ) ); ?></span>
+			<?php endif; ?>
+			<?php if ( $bytes ) : ?>
+				<span class="rf-chip"><?php echo esc_html( romsfun_format_bytes( $bytes ) ); ?></span>
+			<?php endif; ?>
+		</div>
+	</article>
+	<?php
+}
+
+/**
+ * Query helper for the homepage sections.
+ *
+ * `no_found_rows` skips the SQL_CALC_FOUND_ROWS count, which is pure waste on a fixed-size
+ * homepage list and gets expensive once the catalogue is large.
+ */
+function romsfun_home_query( string $mode, int $count ): WP_Query {
+	$args = array(
+		'post_type'           => 'rom',
+		'posts_per_page'      => $count,
+		'ignore_sticky_posts' => true,
+		'no_found_rows'       => true,
+	);
+
+	if ( 'popular' === $mode ) {
+		$args['meta_key'] = '_rf_download_count';
+		$args['orderby']  = 'meta_value_num';
+		$args['order']    = 'DESC';
+	} else {
+		$args['orderby'] = 'date';
+		$args['order']   = 'DESC';
+	}
+
+	return new WP_Query( $args );
+}
