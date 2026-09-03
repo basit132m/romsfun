@@ -20,6 +20,7 @@ schema, importers), and any scripts used to populate the catalogue.
 ## Status
 
 - [x] Step 1a — Foundation & stack decisions (hosting: Hostinger VPS KVM 2)
-- [ ] Step 1b — Server provisioning (runbook written, awaiting execution)
+- [x] Step 1b — Server provisioned and hardened
+- [ ] Step 1c — DNS + WordPress install
 - [ ] Step 2 — Content architecture (post types, taxonomies, fields)
 - [ ] Step 3 onward — see roadmap
