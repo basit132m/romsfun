@@ -1,0 +1,226 @@
+/* ==========================================================================
+   RomsFun — design system
+   Single stylesheet, no framework, no webfont request. Every external request
+   is a round trip before first paint, and this site's traffic is mobile search.
+   ========================================================================== */
+
+:root {
+	/* Brand. Change --rf-brand and the whole site follows. */
+	--rf-brand:        #e0175b;
+	--rf-brand-dark:   #b81049;
+	--rf-brand-soft:   #fdeaf1;
+
+	--rf-bg:           #f6f7f9;
+	--rf-surface:      #ffffff;
+	--rf-border:       #e6e8ec;
+	--rf-text:         #14161a;
+	--rf-text-muted:   #667085;
+	--rf-link:         var(--rf-brand);
+
+	--rf-radius:       14px;
+	--rf-radius-sm:    9px;
+	--rf-radius-pill:  999px;
+	--rf-shadow:       0 1px 2px rgb(16 24 40 / .04), 0 4px 16px rgb(16 24 40 / .05);
+
+	--rf-wrap:         1180px;
+	--rf-gap:          24px;
+
+	--rf-font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+}
+
+:root:not([data-theme="light"]) {
+	color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+	:root:not([data-theme="light"]) {
+		--rf-bg:         #0f1115;
+		--rf-surface:    #171a20;
+		--rf-border:     #262b34;
+		--rf-text:       #eef1f6;
+		--rf-text-muted: #97a1b0;
+		--rf-brand-soft: #2a1220;
+		color-scheme: dark;
+	}
+}
+
+:root[data-theme="dark"] {
+	--rf-bg:         #0f1115;
+	--rf-surface:    #171a20;
+	--rf-border:     #262b34;
+	--rf-text:       #eef1f6;
+	--rf-text-muted: #97a1b0;
+	--rf-brand-soft: #2a1220;
+	color-scheme: dark;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+	margin: 0;
+	background: var(--rf-bg);
+	color: var(--rf-text);
+	font-family: var(--rf-font);
+	font-size: 16px;
+	line-height: 1.6;
+	-webkit-font-smoothing: antialiased;
+}
+
+img { max-width: 100%; height: auto; display: block; }
+a { color: var(--rf-link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+h1, h2, h3 { line-height: 1.25; margin: 0 0 .5em; letter-spacing: -.015em; }
+h1 { font-size: clamp(1.6rem, 1.2rem + 1.6vw, 2.2rem); }
+h2 { font-size: clamp(1.25rem, 1.1rem + .6vw, 1.5rem); }
+h3 { font-size: 1rem; }
+
+/* Visible focus is an accessibility requirement and costs nothing. */
+:focus-visible { outline: 3px solid var(--rf-brand); outline-offset: 2px; border-radius: 4px; }
+
+.rf-skip-link {
+	position: absolute; left: -9999px; top: 0; z-index: 100;
+	background: var(--rf-surface); padding: 12px 20px; border-radius: 0 0 var(--rf-radius-sm) 0;
+}
+.rf-skip-link:focus { left: 0; }
+
+.rf-wrap { max-width: var(--rf-wrap); margin-inline: auto; padding-inline: 16px; }
+
+/* ---------- Header ---------- */
+
+.rf-header { background: var(--rf-brand); color: #fff; position: sticky; top: 0; z-index: 50; }
+.rf-header__inner { display: flex; align-items: center; gap: 20px; min-height: 62px; }
+
+.rf-logo { color: #fff; font-weight: 800; font-size: 1.05rem; letter-spacing: .02em; text-transform: uppercase; }
+.rf-logo:hover { text-decoration: none; opacity: .9; }
+
+.rf-nav { margin-inline: auto; }
+.rf-nav ul { display: flex; gap: 4px; list-style: none; margin: 0; padding: 5px; background: rgb(255 255 255 / .14); border-radius: var(--rf-radius-pill); }
+.rf-nav a { color: #fff; font-size: .9rem; font-weight: 500; padding: 8px 18px; border-radius: var(--rf-radius-pill); display: block; }
+.rf-nav a:hover { background: rgb(255 255 255 / .16); text-decoration: none; }
+.rf-nav .current-menu-item > a { background: #fff; color: var(--rf-brand); font-weight: 600; }
+
+.rf-header__account {
+	width: 38px; height: 38px; display: grid; place-items: center; flex: none;
+	background: #fff; color: var(--rf-brand); border-radius: 50%; font-weight: 700;
+}
+.rf-header__account:hover { text-decoration: none; }
+
+@media (max-width: 860px) {
+	.rf-nav { width: 100%; order: 3; overflow-x: auto; }
+	.rf-nav ul { width: max-content; }
+	.rf-header__inner { flex-wrap: wrap; padding-block: 10px; }
+}
+
+/* ---------- Layout primitives ---------- */
+
+.rf-main { padding-block: 28px 48px; }
+.rf-card-surface { background: var(--rf-surface); border: 1px solid var(--rf-border); border-radius: var(--rf-radius); box-shadow: var(--rf-shadow); }
+.rf-section { margin-bottom: var(--rf-gap); padding: 22px; }
+.rf-section > h2 { margin-bottom: 16px; }
+
+/* ---------- Breadcrumbs ---------- */
+
+.rf-breadcrumb ol { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0 0 14px; padding: 0; font-size: .85rem; color: var(--rf-text-muted); }
+.rf-breadcrumb li + li::before { content: "/"; margin-right: 8px; color: var(--rf-border); }
+.rf-breadcrumb a { color: var(--rf-text-muted); }
+.rf-breadcrumb a:hover { color: var(--rf-brand); }
+
+/* ---------- Pills ---------- */
+
+.rf-pills { display: flex; flex-wrap: wrap; gap: 6px; }
+.rf-pill {
+	font-size: .74rem; font-weight: 600; padding: 4px 12px;
+	border-radius: var(--rf-radius-pill); border: 1px solid var(--rf-border);
+	color: var(--rf-text-muted); background: var(--rf-bg); white-space: nowrap;
+}
+.rf-pill:hover { text-decoration: none; border-color: var(--rf-brand); color: var(--rf-brand); }
+.rf-pill--console { color: var(--rf-brand); border-color: color-mix(in srgb, var(--rf-brand) 35%, transparent); background: var(--rf-brand-soft); }
+
+/* ---------- Buttons ---------- */
+
+.rf-btn {
+	display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+	background: var(--rf-brand); color: #fff; font-weight: 600; font-size: .95rem;
+	padding: 12px 26px; border: 0; border-radius: var(--rf-radius-pill); cursor: pointer;
+}
+.rf-btn:hover { background: var(--rf-brand-dark); text-decoration: none; color: #fff; }
+.rf-btn--ghost { background: transparent; color: var(--rf-text-muted); border: 1px solid var(--rf-border); }
+.rf-btn--ghost:hover { background: var(--rf-brand-soft); color: var(--rf-brand); border-color: var(--rf-brand); }
+
+/* ---------- Single ROM ---------- */
+
+.rf-rom-hero { display: grid; grid-template-columns: 300px 1fr; gap: var(--rf-gap); margin-bottom: var(--rf-gap); align-items: start; }
+.rf-rom-hero__art { padding: 16px; }
+.rf-rom-hero__art img { border-radius: var(--rf-radius-sm); width: 100%; }
+.rf-rom-hero__body { padding: 22px; }
+.rf-rom-hero__title { margin-bottom: 10px; color: var(--rf-brand); }
+
+.rf-rom-facts { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; font-size: .88rem; color: var(--rf-text-muted); margin-bottom: 14px; }
+.rf-rom-facts > * + *::before { content: "•"; margin-right: 16px; color: var(--rf-border); }
+.rf-stars { color: #f6b100; letter-spacing: 2px; }
+
+.rf-specs { list-style: none; margin: 18px 0; padding: 0; display: grid; gap: 6px; }
+.rf-specs li { display: flex; justify-content: space-between; align-items: center; gap: 16px; background: var(--rf-bg); border-radius: var(--rf-radius-sm); padding: 11px 16px; font-size: .9rem; }
+.rf-specs dt, .rf-specs .rf-specs__label { color: var(--rf-text-muted); font-weight: 500; }
+.rf-specs .rf-specs__value { font-weight: 600; text-align: right; }
+.rf-specs a { color: var(--rf-brand); }
+
+.rf-rom-actions { display: flex; gap: 10px; align-items: center; margin-top: 20px; flex-wrap: wrap; }
+
+.rf-prose { font-size: .95rem; color: var(--rf-text); }
+.rf-prose p { margin: 0 0 1em; }
+.rf-prose :last-child { margin-bottom: 0; }
+
+@media (max-width: 780px) {
+	.rf-rom-hero { grid-template-columns: 1fr; }
+	.rf-rom-hero__art { max-width: 260px; margin-inline: auto; }
+}
+
+/* ---------- Cards / grids ---------- */
+
+.rf-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+
+.rf-card { background: var(--rf-surface); border: 1px solid var(--rf-border); border-radius: var(--rf-radius); overflow: hidden; display: flex; flex-direction: column; }
+.rf-card:hover { border-color: color-mix(in srgb, var(--rf-brand) 45%, transparent); }
+.rf-card__media { display: block; aspect-ratio: 3 / 4; background: var(--rf-bg); }
+.rf-card__media img { width: 100%; height: 100%; object-fit: cover; }
+.rf-card__placeholder { display: block; width: 100%; height: 100%; background: linear-gradient(135deg, var(--rf-bg), var(--rf-border)); }
+.rf-card__body { padding: 12px; display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.rf-card__title { font-size: .88rem; font-weight: 600; margin: 0; line-height: 1.35; }
+.rf-card__title a { color: var(--rf-text); }
+.rf-card__title a:hover { color: var(--rf-brand); text-decoration: none; }
+.rf-card__meta { display: flex; gap: 12px; font-size: .76rem; color: var(--rf-text-muted); margin-top: auto; }
+
+/* ---------- Archive header ---------- */
+
+.rf-archive-head { padding: 26px; margin-bottom: var(--rf-gap); }
+.rf-archive-head p { color: var(--rf-text-muted); margin: 0; max-width: 70ch; }
+.rf-count { font-size: .85rem; color: var(--rf-text-muted); }
+
+/* ---------- Pagination ---------- */
+
+.rf-pagination { margin-top: 32px; }
+.rf-pagination .page-numbers {
+	display: inline-grid; place-items: center; min-width: 40px; height: 40px; padding: 0 12px;
+	background: var(--rf-surface); border: 1px solid var(--rf-border); border-radius: var(--rf-radius-sm);
+	color: var(--rf-text); font-size: .9rem; font-weight: 500;
+}
+.rf-pagination .page-numbers:hover { border-color: var(--rf-brand); color: var(--rf-brand); text-decoration: none; }
+.rf-pagination .current { background: var(--rf-brand); border-color: var(--rf-brand); color: #fff; }
+.rf-pagination ul { display: flex; flex-wrap: wrap; gap: 8px; list-style: none; margin: 0; padding: 0; }
+
+/* ---------- Footer ---------- */
+
+.rf-footer { background: var(--rf-brand); color: #fff; margin-top: 56px; padding-block: 34px; text-align: center; }
+.rf-footer a { color: #fff; }
+.rf-footer__brand { font-weight: 800; text-transform: uppercase; letter-spacing: .02em; font-size: 1.05rem; display: inline-block; margin-bottom: 14px; }
+.rf-footer ul { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 26px; list-style: none; margin: 0 0 18px; padding: 0; font-size: .88rem; }
+.rf-footer__legal { font-size: .8rem; opacity: .82; margin: 0; }
+
+/* ---------- Utilities ---------- */
+
+.screen-reader-text {
+	position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+	overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}

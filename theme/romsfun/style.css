@@ -1,0 +1,14 @@
+/*
+Theme Name:  RomsFun
+Theme URI:   https://roms-fun.net/
+Description: Custom catalogue theme for RomsFun. Built for Core Web Vitals and structured data at 70,000-page scale.
+Author:      RomsFun
+Version:     1.0.0
+Requires at least: 6.4
+Tested up to: 6.7
+Requires PHP: 8.1
+License:     GPL-2.0-or-later
+Text Domain: romsfun
+*/
+
+/* Styles live in assets/css/main.css — this file exists for the theme header only. */

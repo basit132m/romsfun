@@ -18,6 +18,7 @@ schema, importers), and any scripts used to populate the catalogue.
 | [docs/server-facts.md](docs/server-facts.md) | Live server reference — IP, specs, stack, access |
 | [docs/01-server-setup-runbook.md](docs/01-server-setup-runbook.md) | **Step 1 runbook** — Hostinger KVM 2 → secured, tuned, empty WordPress |
 | [docs/02-content-architecture.md](docs/02-content-architecture.md) | **Step 2** — post types, taxonomies, URL structure, crawl control |
+| [docs/03-theme.md](docs/03-theme.md) | **Step 4** — the custom theme, and where it beats the competitor |
 
 ## Status
 
@@ -25,5 +26,7 @@ schema, importers), and any scripts used to populate the catalogue.
 - [x] Step 1b — Server provisioned and hardened
 - [x] Step 1c — DNS, WordPress, SSL, tuning
 - [x] Step 2 — Content architecture (plugin written, awaiting install)
+- [x] Step 4 — Theme (ROM page, archives, schema) — homepage still to come
 - [ ] Step 3 — Data import
+- [ ] Step 5 — Faceted search
 - [ ] Step 3 onward — see roadmap

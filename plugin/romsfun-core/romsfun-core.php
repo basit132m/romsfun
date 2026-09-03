@@ -22,6 +22,7 @@ define( 'ROMSFUN_CORE_PATH', plugin_dir_path( __FILE__ ) );
 require_once ROMSFUN_CORE_PATH . 'includes/post-types.php';
 require_once ROMSFUN_CORE_PATH . 'includes/taxonomies.php';
 require_once ROMSFUN_CORE_PATH . 'includes/permalinks.php';
+require_once ROMSFUN_CORE_PATH . 'includes/fields.php';
 
 /**
  * Rewrite rules are expensive to regenerate, so we only flush on activation and deactivation —
