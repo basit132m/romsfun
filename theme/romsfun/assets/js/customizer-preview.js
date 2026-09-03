@@ -34,7 +34,9 @@
 	var pxVars = {
 		container_width: '--rf-wrap',
 		corner_radius:   '--rf-radius',
-		base_font_size:  '--rf-font-size'
+		base_font_size:  '--rf-font-size',
+		hero_height:     '--rf-hero-height',
+		hero_overlap:    '--rf-hero-overlap'
 	};
 
 	Object.keys( pxVars ).forEach( function ( setting ) {

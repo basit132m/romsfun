@@ -35,7 +35,9 @@ function romsfun_settings(): array {
 		'muted_color'     => array( 'default' => '#667085', 'type' => 'color',  'var' => '--rf-text-muted', 'scope' => 'light' ),
 
 		// Layout metrics.
-		'container_width' => array( 'default' => 1180, 'type' => 'number', 'var' => '--rf-wrap',       'unit' => 'px', 'min' => 900,  'max' => 1600, 'scope' => 'brand' ),
+		'container_width' => array( 'default' => 1180, 'type' => 'number', 'var' => '--rf-wrap',          'unit' => 'px', 'min' => 900, 'max' => 1600, 'scope' => 'brand' ),
+		'hero_height'     => array( 'default' => 520,  'type' => 'number', 'var' => '--rf-hero-height',   'unit' => 'px', 'min' => 240, 'max' => 800,  'scope' => 'brand' ),
+		'hero_overlap'    => array( 'default' => 48,   'type' => 'number', 'var' => '--rf-hero-overlap',  'unit' => 'px', 'min' => 0,   'max' => 160,  'scope' => 'brand' ),
 		'corner_radius'   => array( 'default' => 14,   'type' => 'number', 'var' => '--rf-radius',     'unit' => 'px', 'min' => 0,    'max' => 28,   'scope' => 'brand' ),
 		'base_font_size'  => array( 'default' => 16,   'type' => 'number', 'var' => '--rf-font-size',  'unit' => 'px', 'min' => 14,   'max' => 20,   'scope' => 'brand' ),
 	);
@@ -125,6 +127,8 @@ function romsfun_customize_register( WP_Customize_Manager $wp_customize ): void 
 		'text_color'      => array( __( 'Body Text', 'romsfun' ), 'romsfun_palette' ),
 		'muted_color'     => array( __( 'Muted Text', 'romsfun' ), 'romsfun_palette' ),
 		'container_width' => array( __( 'Content Width (px)', 'romsfun' ), 'romsfun_layout' ),
+		'hero_height'     => array( __( 'Hero Image Height (px)', 'romsfun' ), 'romsfun_home' ),
+		'hero_overlap'    => array( __( 'Search Panel Overlap (px)', 'romsfun' ), 'romsfun_home' ),
 		'corner_radius'   => array( __( 'Corner Radius (px)', 'romsfun' ), 'romsfun_layout' ),
 		'base_font_size'  => array( __( 'Base Font Size (px)', 'romsfun' ), 'romsfun_layout' ),
 	);

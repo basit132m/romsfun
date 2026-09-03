@@ -150,3 +150,26 @@ in its own description. No request is made on the default.
 
 `auto` (default) respects each visitor's device preference. `light` or `dark` stamps `data-theme`
 on `<html>` and forces one.
+
+## Cache purging
+
+Four independent caches sit in front of this site: the browser, Cloudflare's edge, Varnish on the
+server, and Redis via the object cache. A change that "didn't work" is very often just being served
+from one of them, and chasing that through four separate interfaces wastes real time.
+
+**Tools → RomsFun Cache** (and a **Purge Cache** button in the admin toolbar) clears Redis, Varnish
+and Cloudflare in one action, reporting each layer separately so you can see what actually ran.
+
+The browser layer is handled at the source rather than by purging: theme assets are versioned by
+file modification time, so an edited stylesheet always gets a fresh URL.
+
+### Cloudflare credentials
+
+Zone ID and an API token, stored in options. Use a token scoped to **Zone → Cache Purge** on that
+zone only — never a Global API Key, which would grant full account access if the database were ever
+exposed. Saving with the token field blank keeps the existing token rather than clearing it.
+
+### Automatic purge on save
+
+Off by default, and deliberately so: a bulk ROM import would fire thousands of purges and exhaust
+the Cloudflare API rate limit. Worth enabling once the catalogue is stable and edits are occasional.
