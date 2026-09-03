@@ -40,6 +40,43 @@ installing; it only needs the `maxmemory` tuning in the runbook and the WordPres
 > silently bans nothing. Verify with `fail2ban-client status sshd` — the "Journal matches" line
 > confirms it is reading journald.
 
+## Applied tuning
+
+| Layer | Setting | Value | Notes |
+|---|---|---|---|
+| MySQL | `innodb_buffer_pool_size` | **3G** (was 512M) | `/etc/mysql/mysql.conf.d/mysqld.cnf`; backup at `.bak` |
+| PHP | `memory_limit` | 512M | via CloudPanel PHP Settings |
+| PHP | `max_input_vars` | 10000 | **critical** — ACF and FacetWP silently truncate at the 1000 default |
+| PHP | `max_execution_time` / `max_input_time` | 300 | |
+| PHP | upload / post max size | 128M | |
+| WordPress | `WP_POST_REVISIONS` | 5 | uncapped revisions across 70k posts bloats the DB past the buffer pool |
+| WordPress | `DISALLOW_FILE_EDIT` | true | removes the dashboard code editor |
+| WordPress | `WP_REDIS_HOST` / `WP_CACHE_KEY_SALT` | 127.0.0.1 / `romsfun_` | |
+
+The buffer pool is the highest-value setting on the box: `wp_postmeta` will exceed a million rows
+at 70k ROMs and every faceted query joins against it. At 512M those index pages are evicted
+constantly and each filter click hits disk.
+
+## Database
+
+Percona Server **8.4.11-11**. Root uses password auth, not socket auth — `sudo mysql` alone fails.
+Credentials via `clpctl db:show:master-credentials`.
+
+Config lives in `/etc/mysql/mysql.conf.d/mysqld.cnf` (not the Debian-standard location some guides
+assume). `innodb_buffer_pool_instances` left at CloudPanel's 8.
+
+## WordPress install
+
+| | |
+|---|---|
+| Doc root | `/home/RomsFun/htdocs/roms-fun.net` |
+| Site user | `RomsFun` (capitalised — note when globbing paths) |
+| PHP | 8.3, `php8.3-redis` present |
+| SSL | Let's Encrypt, issued while grey-clouded; Cloudflare now proxying at Full (strict) |
+
+> A non-root admin cannot `ls` into `/home/<siteuser>/` — CloudPanel locks site home directories
+> down. Use `sudo find` rather than a glob when locating site paths.
+
 ## Also on the image
 
 Varnish, plus PHP-FPM 7.1 through 8.5. Varnish is a caching layer we can use in Phase 7 rather
