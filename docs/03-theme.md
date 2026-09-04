@@ -278,3 +278,30 @@ record it gives you rather than using the meta tag.
 A Domain property covers http and https, www and non-www, and every subdomain in one place —
 otherwise the same site reports as up to four separate properties with the data split between them.
 It also cannot be broken by a theme change or a caching layer serving a stale page.
+
+## Meta descriptions and social tags
+
+WordPress core emits no meta description, so without this the site had none at all.
+
+**Settings → RomsFun SEO** holds the homepage description. Every other page derives one
+automatically:
+
+| Page | Source |
+|---|---|
+| Homepage | The field, falling back to the site tagline |
+| ROM / post / page | Excerpt, falling back to trimmed content |
+| Taxonomy hub | Term description, falling back to a generated line naming the term and its count |
+
+Trimming breaks on a word boundary at 158 characters rather than mid-word.
+
+Open Graph and Twitter tags are emitted alongside, since they share the same description and image.
+`summary_large_image` is only claimed when an image actually exists — claiming it without one
+produces a broken preview rather than a large one.
+
+### It stands down for a real SEO plugin
+
+If Rank Math, Yoast, AIOSEO, SEOPress or The SEO Framework is activated, this outputs nothing.
+
+Two competing descriptions or two sets of Open Graph tags on a page is worse than having neither,
+and it is exactly the kind of conflict that stays invisible until someone views source and wonders
+why their social previews are wrong.

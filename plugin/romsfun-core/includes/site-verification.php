@@ -111,6 +111,11 @@ function romsfun_render_verification_page(): void {
 		// Raw code is stored only for users who may post unfiltered HTML, which on a single site
 		// means administrators. Anyone else saving this form leaves these two fields untouched
 		// rather than having their input silently mangled by sanitisation.
+		update_option(
+			'romsfun_home_description',
+			sanitize_text_field( (string) wp_unslash( $_POST['romsfun_home_description'] ?? '' ) )
+		);
+
 		if ( current_user_can( 'unfiltered_html' ) ) {
 			update_option( 'romsfun_header_code', (string) wp_unslash( $_POST['romsfun_header_code'] ?? '' ) );
 			update_option( 'romsfun_footer_code', (string) wp_unslash( $_POST['romsfun_footer_code'] ?? '' ) );
@@ -135,6 +140,25 @@ function romsfun_render_verification_page(): void {
 			<input type="hidden" name="romsfun_seo_save" value="1">
 
 			<div class="card" style="max-width:820px;padding:20px">
+				<h2><?php esc_html_e( 'Homepage meta description', 'romsfun' ); ?></h2>
+				<p>
+					<?php esc_html_e( 'Shown under your homepage title in search results. Aim for 150–160 characters — longer gets truncated. Every other page derives its description automatically from its excerpt or term description.', 'romsfun' ); ?>
+				</p>
+				<?php $home_desc = (string) get_option( 'romsfun_home_description', '' ); ?>
+				<textarea name="romsfun_home_description" rows="3" class="large-text"
+					maxlength="300"><?php echo esc_textarea( $home_desc ); ?></textarea>
+				<p class="description">
+					<?php
+					printf(
+						/* translators: %d: character count */
+						esc_html__( 'Currently %d characters.', 'romsfun' ),
+						(int) mb_strlen( $home_desc )
+					);
+					?>
+				</p>
+			</div>
+
+			<div class="card" style="max-width:820px;padding:20px;margin-top:20px">
 				<h2><?php esc_html_e( 'Site verification', 'romsfun' ); ?></h2>
 				<p><?php esc_html_e( 'Paste either the full meta tag or just the token — both work.', 'romsfun' ); ?></p>
 
