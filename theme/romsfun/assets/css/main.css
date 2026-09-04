@@ -412,3 +412,91 @@ h3 { font-size: 1rem; }
 	.rf-lightbox { padding: 12px; gap: 6px; }
 	.rf-lightbox__close, .rf-lightbox__nav { width: 38px; height: 38px; font-size: 22px; }
 }
+
+/* ==========================================================================
+   Ratings
+   ========================================================================== */
+
+.rf-rate { display: inline-flex; gap: 2px; }
+.rf-rate__star {
+	background: none; border: 0; padding: 0 1px; cursor: pointer; line-height: 1;
+	font-size: 1.25rem; color: var(--rf-border); transition: color .12s ease;
+}
+.rf-rate__star.is-on { color: #f6b100; }
+.rf-rate.is-rated .rf-rate__star,
+.rf-rate.is-busy .rf-rate__star { cursor: default; }
+.rf-rate.is-busy { opacity: .6; }
+
+@media (prefers-reduced-motion: reduce) {
+	.rf-rate__star { transition: none; }
+}
+
+.rf-rate__status { font-size: .82rem; color: var(--rf-text-muted); margin: 10px 0 0; min-height: 1.2em; }
+
+.rf-ratings { display: grid; grid-template-columns: 180px 1fr; gap: 28px; align-items: center; }
+.rf-ratings__score { text-align: center; border-right: 1px solid var(--rf-border); padding-right: 20px; }
+.rf-ratings__avg { font-size: 3.2rem; font-weight: 800; line-height: 1; margin: 0 0 8px; letter-spacing: -.03em; }
+.rf-ratings__count { font-size: .84rem; color: var(--rf-text-muted); margin: 8px 0 0; }
+
+.rf-ratings__bars { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.rf-ratings__bars li { display: grid; grid-template-columns: 16px 1fr 40px; gap: 12px; align-items: center; }
+.rf-ratings__star { font-size: .84rem; color: var(--rf-text-muted); text-align: right; }
+.rf-ratings__num { font-size: .84rem; color: var(--rf-text-muted); text-align: right; }
+
+.rf-ratings__track { position: relative; height: 8px; border-radius: var(--rf-radius-pill); background: var(--rf-bg); overflow: hidden; }
+.rf-ratings__track::after {
+	content: ""; position: absolute; inset: 0 auto 0 0;
+	width: var(--rf-bar, 0%); background: var(--rf-brand); border-radius: inherit;
+	transition: width .3s ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.rf-ratings__track::after { transition: none; }
+}
+
+.rf-ratings__empty { margin: 18px 0 0; color: var(--rf-text-muted); font-size: .9rem; }
+
+@media (max-width: 620px) {
+	.rf-ratings { grid-template-columns: 1fr; gap: 20px; }
+	.rf-ratings__score { border-right: 0; border-bottom: 1px solid var(--rf-border); padding: 0 0 18px; }
+}
+
+/* ==========================================================================
+   Comments
+   ========================================================================== */
+
+.rf-comments h2 { margin-bottom: 18px; }
+.rf-comment-list { list-style: none; margin: 0 0 28px; padding: 0; display: grid; gap: 18px; }
+.rf-comment-list ol.children { list-style: none; margin: 18px 0 0 24px; padding: 0; display: grid; gap: 18px; }
+
+.rf-comment-list .comment-body { background: var(--rf-bg); border-radius: var(--rf-radius); padding: 16px 18px; }
+.rf-comment-list .comment-author { display: flex; align-items: center; gap: 10px; font-weight: 600; font-size: .92rem; }
+.rf-comment-list .comment-author img { border-radius: 50%; }
+.rf-comment-list .comment-metadata { font-size: .78rem; color: var(--rf-text-muted); margin: 4px 0 10px; }
+.rf-comment-list .comment-metadata a { color: var(--rf-text-muted); }
+.rf-comment-list .reply { margin-top: 10px; font-size: .84rem; }
+
+.rf-comments__closed { color: var(--rf-text-muted); font-size: .9rem; }
+
+.rf-comment-form__title { margin-bottom: 6px; }
+.rf-comment-form__notes { font-size: .82rem; color: var(--rf-text-muted); margin-bottom: 14px; }
+
+.comment-form label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: 5px; }
+.comment-form input[type="text"],
+.comment-form input[type="email"],
+.comment-form input[type="url"],
+.comment-form textarea {
+	width: 100%; padding: 11px 14px; font: inherit; font-size: .92rem;
+	color: var(--rf-text); background: var(--rf-bg);
+	border: 1px solid var(--rf-border); border-radius: var(--rf-radius-sm);
+}
+.comment-form textarea { min-height: 130px; resize: vertical; }
+.comment-form input:focus, .comment-form textarea:focus { border-color: var(--rf-brand); outline: none; }
+.comment-form p { margin: 0 0 14px; }
+.comment-form .form-submit { margin-top: 4px; }
+.comment-form .submit { border: 0; cursor: pointer; }
+
+/* ---------- Footer logo ---------- */
+
+.rf-footer__logo { margin-bottom: 14px; }
+.rf-footer__logo img { display: inline-block; max-width: 200px; height: auto; }

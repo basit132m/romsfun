@@ -115,8 +115,8 @@ function romsfun_schema_rom( int $post_id ): array {
 		$schema['fileSize'] = romsfun_format_bytes( $bytes );
 	}
 
-	$rating_value = (float) romsfun_get_field( 'rating_value', $post_id );
-	$rating_count = (int) romsfun_get_field( 'rating_count', $post_id );
+	$rating_value = function_exists( 'romsfun_get_rating_average' ) ? romsfun_get_rating_average( $post_id ) : 0.0;
+	$rating_count = function_exists( 'romsfun_get_rating_count' ) ? romsfun_get_rating_count( $post_id ) : 0;
 
 	// Google requires a non-zero review count for an AggregateRating; emitting one without
 	// ratings is a structured-data error and can cost the rich result entirely.

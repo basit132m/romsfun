@@ -15,8 +15,9 @@ while ( have_posts() ) :
 	$post_id      = get_the_ID();
 	$downloads    = (int) romsfun_get_field( 'download_count' );
 	$bytes        = (int) romsfun_get_field( 'file_size_bytes' );
-	$rating       = (float) romsfun_get_field( 'rating_value' );
-	$rating_count = (int) romsfun_get_field( 'rating_count' );
+	$rating       = function_exists( 'romsfun_get_rating_average' ) ? romsfun_get_rating_average( $post_id ) : 0.0;
+	$rating_count = function_exists( 'romsfun_get_rating_count' ) ? romsfun_get_rating_count( $post_id ) : 0;
+	$has_rated    = function_exists( 'romsfun_has_rated' ) && romsfun_has_rated( $post_id );
 	$download_url = romsfun_get_field( 'download_url' );
 	$release      = romsfun_get_field( 'release_date' );
 
@@ -44,20 +45,26 @@ while ( have_posts() ) :
 				<h1 class="rf-rom-hero__title"><?php the_title(); ?></h1>
 
 				<div class="rf-rom-facts">
-					<?php if ( $rating > 0 ) : ?>
-						<span>
-							<?php romsfun_stars( $rating ); ?>
-							<?php echo esc_html( number_format_i18n( $rating, 1 ) ); ?>
-							<span class="rf-count">
-								<?php
-								printf(
-									esc_html( _n( '(%s review)', '(%s reviews)', $rating_count, 'romsfun' ) ),
-									esc_html( number_format_i18n( $rating_count ) )
-								);
-								?>
-							</span>
-						</span>
-					<?php endif; ?>
+					<span class="rf-rate"
+						data-rf-rate="<?php echo esc_attr( $post_id ); ?>"
+						data-rf-endpoint="<?php echo esc_url( rest_url( 'romsfun/v1/rate' ) ); ?>"
+						data-rf-current="<?php echo esc_attr( (string) round( $rating ) ); ?>"
+						data-rf-rated="<?php echo $has_rated ? '1' : '0'; ?>">
+						<?php for ( $i = 1; $i <= 5; $i++ ) : ?>
+							<button type="button" class="rf-rate__star<?php echo $i <= round( $rating ) ? ' is-on' : ''; ?>"
+								data-rf-star="<?php echo esc_attr( (string) $i ); ?>"
+								aria-label="<?php
+									/* translators: %d: number of stars */
+									printf( esc_attr__( 'Rate %d out of 5', 'romsfun' ), (int) $i );
+								?>">★</button>
+						<?php endfor; ?>
+					</span>
+
+					<span>
+						<strong data-rf-avg><?php echo esc_html( number_format_i18n( $rating, 1 ) ); ?></strong>
+						<span class="rf-count">(<span data-rf-count><?php echo esc_html( number_format_i18n( $rating_count ) ); ?></span>
+						<?php esc_html_e( 'ratings', 'romsfun' ); ?>)</span>
+					</span>
 
 					<?php if ( $downloads ) : ?>
 						<span><?php printf( esc_html__( '%s downloads', 'romsfun' ), esc_html( number_format_i18n( $downloads ) ) ); ?></span>
@@ -119,6 +126,10 @@ while ( have_posts() ) :
 					}
 					?>
 				</ul>
+
+				<p class="rf-rate__status" data-rf-rate-status aria-live="polite"><?php
+					echo $has_rated ? esc_html__( 'You have already rated this ROM.', 'romsfun' ) : '';
+				?></p>
 
 				<div class="rf-rom-actions">
 					<?php if ( $download_url ) : ?>
@@ -184,6 +195,44 @@ while ( have_posts() ) :
 			</section>
 		<?php endif; ?>
 
+		<?php if ( function_exists( 'romsfun_get_rating_distribution' ) ) :
+			$dist = romsfun_get_rating_distribution( $post_id );
+			?>
+			<section class="rf-section rf-card-surface" aria-labelledby="rf-ratings-title">
+				<h2 id="rf-ratings-title"><?php esc_html_e( 'Ratings & reviews', 'romsfun' ); ?></h2>
+
+				<div class="rf-ratings">
+					<div class="rf-ratings__score">
+						<p class="rf-ratings__avg" data-rf-avg><?php echo esc_html( number_format_i18n( $rating, 1 ) ); ?></p>
+						<?php romsfun_stars( max( $rating, 0 ) ); ?>
+						<p class="rf-ratings__count">
+							<span data-rf-count><?php echo esc_html( number_format_i18n( $rating_count ) ); ?></span>
+							<?php esc_html_e( 'ratings', 'romsfun' ); ?>
+						</p>
+					</div>
+
+					<ul class="rf-ratings__bars">
+						<?php
+						for ( $star = 5; $star >= 1; $star-- ) :
+							$votes   = (int) $dist[ $star ];
+							$percent = $rating_count ? ( $votes / $rating_count ) * 100 : 0;
+							?>
+							<li>
+								<span class="rf-ratings__star"><?php echo esc_html( (string) $star ); ?></span>
+								<span class="rf-ratings__track" data-rf-bar="<?php echo esc_attr( (string) $star ); ?>"
+									style="--rf-bar: <?php echo esc_attr( number_format( $percent, 1, '.', '' ) ); ?>%"></span>
+								<span class="rf-ratings__num" data-rf-bar-count="<?php echo esc_attr( (string) $star ); ?>"><?php echo esc_html( number_format_i18n( $votes ) ); ?></span>
+							</li>
+						<?php endfor; ?>
+					</ul>
+				</div>
+
+				<?php if ( ! $rating_count ) : ?>
+					<p class="rf-ratings__empty"><?php esc_html_e( 'No ratings yet — be the first to rate this ROM using the stars above.', 'romsfun' ); ?></p>
+				<?php endif; ?>
+			</section>
+		<?php endif; ?>
+
 		<?php
 		$checksums = array_filter(
 			array(
@@ -233,7 +282,7 @@ while ( have_posts() ) :
 
 		<?php if ( comments_open() || get_comments_number() ) : ?>
 			<section class="rf-section rf-card-surface">
-				<?php comments_template(); ?>
+				<?php comments_template( '', true ); ?>
 			</section>
 		<?php endif; ?>
 

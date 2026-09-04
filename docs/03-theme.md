@@ -173,3 +173,48 @@ exposed. Saving with the token field blank keeps the existing token rather than 
 
 Off by default, and deliberately so: a bulk ROM import would fire thousands of purges and exhaust
 the Cloudflare API rate limit. Worth enabling once the catalogue is stable and edits are occasional.
+
+## Visitor ratings
+
+Ratings come from visitors, not from an editor typing a number.
+
+That is a compliance point as much as a product one: Google's structured data policy prohibits
+self-serving `AggregateRating` markup, and fabricated ratings put the rich result — and potentially
+the site — at risk of a manual action. Real votes are the only version of this worth shipping.
+
+### How it works
+
+- The full 1–5 distribution is stored in `_rf_rating_dist`, so the histogram costs nothing to render
+- The derived average and count are mirrored into `_rf_rating_value` / `_rf_rating_count` so
+  `orderby => meta_value_num` sorting keeps working
+- Star widget sits in the ROM hero; the breakdown sits below the description
+- Schema reads the real numbers
+
+### Deduplication
+
+Logged-in users are tracked in user meta. Anonymous visitors are deduplicated by a hashed-IP
+transient — hashed with the site's auth salt so nothing personally identifying is stored, and
+expiring rather than accumulating, since keeping every voter's IP in post meta would grow unbounded
+across 70,000 ROMs.
+
+This stops casual double-voting, not a determined attacker. Vote manipulation on a public widget is
+an unwinnable arms race; the goal is a signal that is broadly honest.
+
+### Why the endpoint is public
+
+The page HTML is served from Varnish and Cloudflare, so a nonce embedded in it would be stale for
+most visitors and the widget would fail for exactly the people it exists for. Rating a public page
+is not a privileged action — the worst outcome of a forged request is one skewed vote, which
+deduplication already limits, and a nonce would not stop scripted manipulation anyway.
+
+### Caching and staleness
+
+Server-rendered numbers can be minutes stale behind the CDN. That is an accepted trade for a
+cacheable page. When someone votes, the API response updates the DOM immediately so their own
+action is always reflected.
+
+## Comments
+
+Enabled on the `rom` post type, rendered by `comments.php` at the end of the ROM page. Threaded,
+paginated, styled to match. Remember they are switched off globally in
+**Settings → Discussion** — enable them there, or per-ROM in the editor.

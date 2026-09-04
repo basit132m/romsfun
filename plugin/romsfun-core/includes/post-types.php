@@ -31,7 +31,7 @@ function romsfun_register_post_types(): void {
 			'has_archive'        => 'roms',
 			'menu_icon'          => 'dashicons-games',
 			'menu_position'      => 5,
-			'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields' ),
+			'supports'           => array( 'title', 'editor', 'excerpt', 'thumbnail', 'revisions', 'custom-fields', 'comments' ),
 			'show_in_rest'       => true,
 			'rewrite'            => array(
 				'slug'       => 'roms/%console%',

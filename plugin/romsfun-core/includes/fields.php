@@ -29,8 +29,6 @@ function romsfun_rom_fields(): array {
 		'download_count'  => array( 'label' => 'Download Count','type' => 'number', 'meta' => 'integer' ),
 		'md5'             => array( 'label' => 'MD5',           'type' => 'text',   'meta' => 'string' ),
 		'sha1'            => array( 'label' => 'SHA1',          'type' => 'text',   'meta' => 'string' ),
-		'rating_value'    => array( 'label' => 'Rating (0-5)',  'type' => 'number', 'meta' => 'number' ),
-		'rating_count'    => array( 'label' => 'Rating Count',  'type' => 'number', 'meta' => 'integer' ),
 	);
 }
 

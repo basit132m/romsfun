@@ -10,7 +10,11 @@ defined( 'ABSPATH' ) || exit;
 
 <footer class="rf-footer">
 	<div class="rf-wrap">
-		<a class="rf-footer__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php bloginfo( 'name' ); ?></a>
+		<?php if ( has_custom_logo() ) : ?>
+			<div class="rf-footer__logo"><?php the_custom_logo(); ?></div>
+		<?php else : ?>
+			<a class="rf-footer__brand" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php bloginfo( 'name' ); ?></a>
+		<?php endif; ?>
 
 		<?php
 		if ( has_nav_menu( 'footer' ) ) {
