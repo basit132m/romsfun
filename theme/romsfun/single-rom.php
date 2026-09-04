@@ -134,6 +134,49 @@ while ( have_posts() ) :
 			</div><!-- .rf-rom-hero__body -->
 		</div><!-- .rf-rom-hero -->
 
+		<?php
+		$shots = function_exists( 'romsfun_get_screenshots' ) ? romsfun_get_screenshots( $post_id ) : array();
+
+		if ( $shots ) :
+			?>
+			<section class="rf-section rf-card-surface">
+				<h2><?php esc_html_e( 'Screenshots', 'romsfun' ); ?></h2>
+
+				<div class="rf-shots" data-rf-gallery>
+					<?php
+					foreach ( $shots as $shot_id ) :
+						$full = wp_get_attachment_image_url( $shot_id, 'full' );
+						$alt  = get_post_meta( $shot_id, '_wp_attachment_image_alt', true );
+
+						if ( ! $full ) {
+							continue;
+						}
+						?>
+						<a class="rf-shot" href="<?php echo esc_url( $full ); ?>"
+							data-rf-shot
+							data-alt="<?php echo esc_attr( $alt ); ?>">
+							<?php
+							echo wp_get_attachment_image(
+								$shot_id,
+								'rom-shot',
+								false,
+								array(
+									'loading'  => 'lazy',
+									'decoding' => 'async',
+									'alt'      => $alt ? $alt : sprintf(
+										/* translators: %s: ROM title */
+										esc_attr__( 'Screenshot from %s', 'romsfun' ),
+										get_the_title( $post_id )
+									),
+								)
+							);
+							?>
+						</a>
+					<?php endforeach; ?>
+				</div>
+			</section>
+		<?php endif; ?>
+
 		<?php if ( get_the_content() ) : ?>
 			<section class="rf-section rf-card-surface">
 				<h2><?php esc_html_e( 'Description', 'romsfun' ); ?></h2>

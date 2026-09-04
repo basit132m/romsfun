@@ -164,9 +164,11 @@ h3 { font-size: 1rem; }
 
 /* ---------- Single ROM ---------- */
 
-.rf-rom-hero { display: grid; grid-template-columns: 300px 1fr; gap: var(--rf-gap); margin-bottom: var(--rf-gap); align-items: start; }
-.rf-rom-hero__art { padding: 16px; }
-.rf-rom-hero__art img { border-radius: var(--rf-radius-sm); width: 100%; }
+/* `stretch` makes both columns take the taller one's height, so the box art panel and the details
+   panel line up along the bottom instead of ending at different points. */
+.rf-rom-hero { display: grid; grid-template-columns: 320px 1fr; gap: var(--rf-gap); margin-bottom: var(--rf-gap); align-items: stretch; }
+.rf-rom-hero__art { padding: 16px; display: flex; align-items: flex-start; justify-content: center; }
+.rf-rom-hero__art img { border-radius: var(--rf-radius-sm); width: 100%; height: auto; align-self: flex-start; }
 .rf-rom-hero__body { padding: 22px; }
 .rf-rom-hero__title { margin-bottom: 10px; color: var(--rf-brand); }
 
@@ -341,3 +343,72 @@ h3 { font-size: 1rem; }
 /* ---------- Announcement ---------- */
 
 .rf-announcement h2 { margin-bottom: 10px; }
+
+
+/* ==========================================================================
+   Header search
+   ========================================================================== */
+
+.rf-header__search { position: relative; flex: none; }
+.rf-header__search summary {
+	width: 38px; height: 38px; display: grid; place-items: center; cursor: pointer;
+	background: var(--rf-header-text); color: var(--rf-header-bg); border-radius: 50%;
+	list-style: none;
+}
+.rf-header__search summary::-webkit-details-marker { display: none; }
+.rf-header__search summary::marker { content: ""; }
+
+.rf-header__search-panel {
+	position: absolute; right: 0; top: calc(100% + 10px); z-index: 60;
+	background: var(--rf-surface); border: 1px solid var(--rf-border);
+	border-radius: var(--rf-radius); box-shadow: var(--rf-shadow); padding: 12px; width: min(340px, 80vw);
+}
+.rf-header__search-panel form { display: flex; gap: 8px; }
+.rf-header__search-panel input[type="search"] {
+	flex: 1; min-width: 0; padding: 9px 14px; font: inherit; font-size: .9rem;
+	color: var(--rf-text); background: var(--rf-bg);
+	border: 1px solid var(--rf-border); border-radius: var(--rf-radius-pill);
+}
+.rf-header__search-panel input[type="search"]:focus { border-color: var(--rf-brand); outline: none; }
+
+/* ==========================================================================
+   Screenshots + lightbox
+   ========================================================================== */
+
+.rf-shots { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); }
+
+.rf-shot {
+	display: block; border-radius: var(--rf-radius-sm); overflow: hidden;
+	border: 1px solid var(--rf-border); background: var(--rf-bg); line-height: 0;
+}
+.rf-shot img { width: 100%; height: 100%; aspect-ratio: 16 / 9; object-fit: cover; transition: transform .25s ease; }
+.rf-shot:hover { border-color: var(--rf-brand); }
+.rf-shot:hover img { transform: scale(1.04); }
+
+@media (prefers-reduced-motion: reduce) {
+	.rf-shot img { transition: none; }
+	.rf-shot:hover img { transform: none; }
+}
+
+.rf-lightbox {
+	position: fixed; inset: 0; z-index: 999;
+	display: flex; align-items: center; justify-content: center; gap: 12px;
+	padding: 24px; background: rgb(8 10 14 / .92);
+}
+.rf-lightbox[hidden] { display: none; }
+.rf-lightbox__figure { margin: 0; max-width: min(1280px, 92vw); text-align: center; }
+.rf-lightbox__figure img { max-width: 100%; max-height: 82vh; border-radius: var(--rf-radius-sm); }
+.rf-lightbox__figure figcaption { color: #cfd6e0; font-size: .85rem; margin-top: 12px; }
+
+.rf-lightbox__close, .rf-lightbox__nav {
+	background: rgb(255 255 255 / .1); color: #fff; border: 0; cursor: pointer;
+	width: 46px; height: 46px; border-radius: 50%; font-size: 26px; line-height: 1;
+	display: grid; place-items: center; flex: none;
+}
+.rf-lightbox__close:hover, .rf-lightbox__nav:hover { background: var(--rf-brand); }
+.rf-lightbox__close { position: absolute; top: 18px; right: 18px; font-size: 30px; }
+
+@media (max-width: 640px) {
+	.rf-lightbox { padding: 12px; gap: 6px; }
+	.rf-lightbox__close, .rf-lightbox__nav { width: 38px; height: 38px; font-size: 22px; }
+}

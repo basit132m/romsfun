@@ -21,10 +21,10 @@ function romsfun_rom_fields(): array {
 		'developer'       => array( 'label' => 'Developer',    'type' => 'text',   'meta' => 'string' ),
 		'version'         => array( 'label' => 'Version',      'type' => 'text',   'meta' => 'string' ),
 		'languages'       => array( 'label' => 'Languages',    'type' => 'text',   'meta' => 'string' ),
-		// Bytes, not "1.2 GB". Stored as a number so it can be sorted and filtered; formatted only
-		// on output. Storing the display string is the classic mistake that makes a size facet
-		// impossible later.
-		'file_size_bytes' => array( 'label' => 'File Size (bytes)', 'type' => 'number', 'meta' => 'integer' ),
+		// Entered as a value plus a unit, but stored in bytes. Bytes are what make the field
+		// sortable and filterable; "1.2 GB" as a string is neither. The unit selector exists so
+		// nobody has to type 1288490188.
+		'file_size_bytes' => array( 'label' => 'File Size', 'type' => 'filesize', 'meta' => 'integer' ),
 		'download_url'    => array( 'label' => 'Download URL',  'type' => 'url',    'meta' => 'string' ),
 		'download_count'  => array( 'label' => 'Download Count','type' => 'number', 'meta' => 'integer' ),
 		'md5'             => array( 'label' => 'MD5',           'type' => 'text',   'meta' => 'string' ),
@@ -84,6 +84,12 @@ function romsfun_render_rom_meta_box( WP_Post $post ): void {
 
 	foreach ( romsfun_rom_fields() as $key => $field ) {
 		$value = get_post_meta( $post->ID, '_rf_' . $key, true );
+
+		if ( 'filesize' === $field['type'] ) {
+			romsfun_render_filesize_field( $key, $field['label'], (int) $value );
+			continue;
+		}
+
 		printf(
 			'<div><label for="rf_%1$s">%2$s</label><input type="%3$s" id="rf_%1$s" name="rf_%1$s" value="%4$s" %5$s></div>',
 			esc_attr( $key ),
@@ -95,7 +101,100 @@ function romsfun_render_rom_meta_box( WP_Post $post ): void {
 	}
 
 	echo '</div>';
+
+	romsfun_render_screenshots_field( $post->ID );
 }
+
+/**
+ * Split a byte count back into the largest sensible unit for editing, so a value saved as
+ * 1288490188 comes back as "1.2 GB" rather than a wall of digits.
+ */
+function romsfun_split_bytes( int $bytes ): array {
+	if ( $bytes <= 0 ) {
+		return array( '', 'MB' );
+	}
+
+	foreach ( array( 'GB' => 1073741824, 'MB' => 1048576, 'KB' => 1024 ) as $unit => $factor ) {
+		if ( $bytes >= $factor ) {
+			return array( rtrim( rtrim( number_format( $bytes / $factor, 2, '.', '' ), '0' ), '.' ), $unit );
+		}
+	}
+
+	return array( (string) $bytes, 'B' );
+}
+
+function romsfun_render_filesize_field( string $key, string $label, int $bytes ): void {
+	list( $value, $unit ) = romsfun_split_bytes( $bytes );
+	?>
+	<div>
+		<label for="rf_<?php echo esc_attr( $key ); ?>"><?php echo esc_html( $label ); ?></label>
+		<span style="display:flex;gap:6px">
+			<input type="number" step="any" min="0" style="flex:1"
+				id="rf_<?php echo esc_attr( $key ); ?>"
+				name="rf_<?php echo esc_attr( $key ); ?>"
+				value="<?php echo esc_attr( $value ); ?>">
+			<select name="rf_<?php echo esc_attr( $key ); ?>_unit" style="width:auto">
+				<?php foreach ( array( 'B', 'KB', 'MB', 'GB' ) as $u ) : ?>
+					<option value="<?php echo esc_attr( $u ); ?>" <?php selected( $unit, $u ); ?>><?php echo esc_html( $u ); ?></option>
+				<?php endforeach; ?>
+			</select>
+		</span>
+	</div>
+	<?php
+}
+
+/**
+ * Screenshot gallery, backed by the native media modal.
+ */
+function romsfun_render_screenshots_field( int $post_id ): void {
+	$ids = array_filter( array_map( 'absint', (array) get_post_meta( $post_id, '_rf_screenshots', true ) ) );
+	?>
+	<hr style="margin:20px 0">
+	<p style="font-weight:600;margin-bottom:6px"><?php esc_html_e( 'Screenshots', 'romsfun' ); ?></p>
+	<p class="description" style="margin-bottom:10px">
+		<?php esc_html_e( 'Upload at 1280×720. Shown as a row under the details table and opened in a lightbox.', 'romsfun' ); ?>
+	</p>
+
+	<div id="rf-screenshots" class="rf-shots-admin">
+		<?php foreach ( $ids as $id ) : ?>
+			<span class="rf-shot-admin" data-id="<?php echo esc_attr( $id ); ?>">
+				<?php echo wp_get_attachment_image( $id, array( 120, 68 ) ); ?>
+				<button type="button" class="rf-shot-remove" aria-label="<?php esc_attr_e( 'Remove', 'romsfun' ); ?>">&times;</button>
+			</span>
+		<?php endforeach; ?>
+	</div>
+
+	<input type="hidden" id="rf-screenshots-input" name="rf_screenshots" value="<?php echo esc_attr( implode( ',', $ids ) ); ?>">
+	<button type="button" class="button" id="rf-screenshots-add"><?php esc_html_e( 'Add / Edit Screenshots', 'romsfun' ); ?></button>
+
+	<style>
+		.rf-shots-admin { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 10px; }
+		.rf-shot-admin { position: relative; display: inline-block; line-height: 0; }
+		.rf-shot-admin img { border-radius: 4px; display: block; }
+		.rf-shot-remove { position: absolute; top: -6px; right: -6px; width: 20px; height: 20px; border-radius: 50%;
+			border: 0; background: #d63638; color: #fff; cursor: pointer; line-height: 1; font-size: 14px; }
+	</style>
+	<?php
+}
+
+/**
+ * The media modal is not loaded on every admin screen, so it has to be requested for this one.
+ */
+function romsfun_admin_assets( string $hook ): void {
+	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) || 'rom' !== get_post_type() ) {
+		return;
+	}
+
+	wp_enqueue_media();
+	wp_enqueue_script(
+		'romsfun-admin',
+		ROMSFUN_CORE_URL . 'assets/admin.js',
+		array( 'jquery' ),
+		ROMSFUN_CORE_VERSION,
+		true
+	);
+}
+add_action( 'admin_enqueue_scripts', 'romsfun_admin_assets' );
 
 function romsfun_save_rom_meta( int $post_id ): void {
 	if ( ! isset( $_POST['romsfun_rom_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['romsfun_rom_nonce'] ) ), 'romsfun_save_rom' ) ) {
@@ -119,11 +218,17 @@ function romsfun_save_rom_meta( int $post_id ): void {
 
 		$raw = wp_unslash( $_POST[ $input ] );
 
-		$value = match ( $field['type'] ) {
-			'url'    => esc_url_raw( $raw ),
-			'number' => 'integer' === $field['meta'] ? (int) $raw : (float) $raw,
-			default  => sanitize_text_field( $raw ),
-		};
+		if ( 'filesize' === $field['type'] ) {
+			$unit  = sanitize_key( wp_unslash( $_POST[ $input . '_unit' ] ?? 'MB' ) );
+			$scale = array( 'b' => 1, 'kb' => 1024, 'mb' => 1048576, 'gb' => 1073741824 );
+			$value = (int) round( (float) $raw * ( $scale[ $unit ] ?? 1 ) );
+		} else {
+			$value = match ( $field['type'] ) {
+				'url'    => esc_url_raw( $raw ),
+				'number' => 'integer' === $field['meta'] ? (int) $raw : (float) $raw,
+				default  => sanitize_text_field( $raw ),
+			};
+		}
 
 		if ( '' === $value || null === $value ) {
 			delete_post_meta( $post_id, '_rf_' . $key );
@@ -132,8 +237,22 @@ function romsfun_save_rom_meta( int $post_id ): void {
 
 		update_post_meta( $post_id, '_rf_' . $key, $value );
 	}
+
+	if ( isset( $_POST['rf_screenshots'] ) ) {
+		$ids = array_values( array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['rf_screenshots'] ) ) ) ) ) );
+
+		if ( $ids ) {
+			update_post_meta( $post_id, '_rf_screenshots', $ids );
+		} else {
+			delete_post_meta( $post_id, '_rf_screenshots' );
+		}
+	}
 }
 add_action( 'save_post_rom', 'romsfun_save_rom_meta' );
+
+function romsfun_get_screenshots( ?int $post_id = null ): array {
+	return array_filter( array_map( 'absint', (array) get_post_meta( $post_id ?: get_the_ID(), '_rf_screenshots', true ) ) );
+}
 
 /**
  * Format a byte count for display. Kept in the plugin so templates, the REST API and any future

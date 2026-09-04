@@ -75,9 +75,13 @@ function romsfun_theme_setup(): void {
 	);
 
 	// Box art is portrait and the LCP element on every ROM page, so it gets its own size rather
-	// than being scaled down from a landscape crop.
-	add_image_size( 'rom-boxart', 400, 560, true );
-	add_image_size( 'rom-card', 300, 420, true );
+	// than being scaled down from a landscape crop. 3:4 matches most console cover art.
+	add_image_size( 'rom-boxart', 450, 600, true );
+	add_image_size( 'rom-card', 300, 400, true );
+
+	// Screenshots are 16:9. The thumbnail is generated at 2x its display width so it stays sharp
+	// on high-density screens without shipping the full 1280px file to the row.
+	add_image_size( 'rom-shot', 640, 360, true );
 
 	register_nav_menus(
 		array(
@@ -114,6 +118,20 @@ function romsfun_enqueue_assets(): void {
 
 	if ( is_singular() && comments_open() && get_option( 'thread_comments' ) ) {
 		wp_enqueue_script( 'comment-reply' );
+	}
+
+	// Loaded only where it is used. Shipping a lightbox to every visitor for a feature most never
+	// open is exactly the kind of dead weight that costs a page-speed score.
+	if ( is_singular( 'rom' ) && function_exists( 'romsfun_get_screenshots' ) && romsfun_get_screenshots() ) {
+		$js_path = get_template_directory() . '/assets/js/lightbox.js';
+
+		wp_enqueue_script(
+			'romsfun-lightbox',
+			get_template_directory_uri() . '/assets/js/lightbox.js',
+			array(),
+			file_exists( $js_path ) ? (string) filemtime( $js_path ) : ROMSFUN_THEME_VERSION,
+			true
+		);
 	}
 }
 add_action( 'wp_enqueue_scripts', 'romsfun_enqueue_assets' );

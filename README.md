@@ -19,6 +19,7 @@ schema, importers), and any scripts used to populate the catalogue.
 | [docs/01-server-setup-runbook.md](docs/01-server-setup-runbook.md) | **Step 1 runbook** — Hostinger KVM 2 → secured, tuned, empty WordPress |
 | [docs/02-content-architecture.md](docs/02-content-architecture.md) | **Step 2** — post types, taxonomies, URL structure, crawl control |
 | [docs/03-theme.md](docs/03-theme.md) | **Step 4** — the custom theme, and where it beats the competitor |
+| [docs/04-taxonomy-terms.md](docs/04-taxonomy-terms.md) | Which Collections and Types to create, and image sizes |
 
 ## Status
 

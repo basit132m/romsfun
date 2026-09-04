@@ -54,11 +54,23 @@ defined( 'ABSPATH' ) || exit;
 			?>
 		</nav>
 
-		<a class="rf-header__account" href="<?php echo esc_url( wp_login_url() ); ?>" aria-label="<?php esc_attr_e( 'Account', 'romsfun' ); ?>">
-			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-				<circle cx="12" cy="8" r="4"/><path d="M4 21c0-4.4 3.6-7 8-7s8 2.6 8 7"/>
-			</svg>
-		</a>
+		<?php /* <details> gives a keyboard-accessible dropdown with no JavaScript at all. */ ?>
+		<details class="rf-header__search">
+			<summary aria-label="<?php esc_attr_e( 'Search', 'romsfun' ); ?>">
+				<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+					<circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+				</svg>
+			</summary>
+
+			<div class="rf-header__search-panel">
+				<form role="search" method="get" action="<?php echo esc_url( get_post_type_archive_link( 'rom' ) ); ?>">
+					<input type="hidden" name="post_type" value="rom">
+					<label class="screen-reader-text" for="rf-header-search"><?php esc_html_e( 'Search ROMs', 'romsfun' ); ?></label>
+					<input type="search" id="rf-header-search" name="s" placeholder="<?php esc_attr_e( 'Search ROMs…', 'romsfun' ); ?>">
+					<button type="submit" class="rf-btn rf-btn--sm"><?php esc_html_e( 'Go', 'romsfun' ); ?></button>
+				</form>
+			</div>
+		</details>
 	</div>
 </header>
 
