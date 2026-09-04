@@ -33,12 +33,45 @@ function romsfun_rom_fields(): array {
 }
 
 /**
+ * Emulator metadata. A separate set from ROMs — an emulator has a licence and a project homepage,
+ * and no region or checksum.
+ */
+function romsfun_emulator_fields(): array {
+	return array(
+		'version'         => array( 'label' => 'Version',       'type' => 'text',     'meta' => 'string' ),
+		'developer'       => array( 'label' => 'Developer',     'type' => 'text',     'meta' => 'string' ),
+		'license'         => array( 'label' => 'License',       'type' => 'text',     'meta' => 'string' ),
+		'release_date'    => array( 'label' => 'Last Updated',  'type' => 'date',     'meta' => 'string' ),
+		'file_size_bytes' => array( 'label' => 'File Size',     'type' => 'filesize', 'meta' => 'integer' ),
+		'download_url'    => array( 'label' => 'Download URL',  'type' => 'url',      'meta' => 'string' ),
+		'website'         => array( 'label' => 'Official Site', 'type' => 'url',      'meta' => 'string' ),
+		'download_count'  => array( 'label' => 'Download Count','type' => 'number',   'meta' => 'integer' ),
+	);
+}
+
+/**
+ * Which post types carry RomsFun metadata, and which field set each uses.
+ */
+function romsfun_fields_for( string $post_type ): array {
+	return match ( $post_type ) {
+		'rom'      => romsfun_rom_fields(),
+		'emulator' => romsfun_emulator_fields(),
+		default    => array(),
+	};
+}
+
+function romsfun_meta_post_types(): array {
+	return array( 'rom', 'emulator' );
+}
+
+/**
  * Expose fields to the REST API so the block editor and any future headless client can read them.
  */
 function romsfun_register_rom_meta(): void {
-	foreach ( romsfun_rom_fields() as $key => $field ) {
+	foreach ( romsfun_meta_post_types() as $post_type ) {
+	foreach ( romsfun_fields_for( $post_type ) as $key => $field ) {
 		register_post_meta(
-			'rom',
+			$post_type,
 			'_rf_' . $key,
 			array(
 				'type'         => $field['meta'],
@@ -47,6 +80,7 @@ function romsfun_register_rom_meta(): void {
 				'auth_callback' => static fn() => current_user_can( 'edit_posts' ),
 			)
 		);
+	}
 	}
 
 	register_post_meta(
@@ -71,6 +105,15 @@ function romsfun_add_rom_meta_box(): void {
 		'normal',
 		'high'
 	);
+
+	add_meta_box(
+		'romsfun_emulator_details',
+		__( 'Emulator Details', 'romsfun' ),
+		'romsfun_render_rom_meta_box',
+		'emulator',
+		'normal',
+		'high'
+	);
 }
 add_action( 'add_meta_boxes', 'romsfun_add_rom_meta_box' );
 
@@ -80,7 +123,7 @@ function romsfun_render_rom_meta_box( WP_Post $post ): void {
 	echo '<style>.rf-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}.rf-grid label{display:block;font-weight:600;margin-bottom:4px}.rf-grid input{width:100%}</style>';
 	echo '<div class="rf-grid">';
 
-	foreach ( romsfun_rom_fields() as $key => $field ) {
+	foreach ( romsfun_fields_for( $post->post_type ) as $key => $field ) {
 		$value = get_post_meta( $post->ID, '_rf_' . $key, true );
 
 		if ( 'filesize' === $field['type'] ) {
@@ -100,7 +143,11 @@ function romsfun_render_rom_meta_box( WP_Post $post ): void {
 
 	echo '</div>';
 
-	romsfun_render_emulator_field( $post->ID );
+	// The emulator relation only makes sense on a ROM.
+	if ( 'rom' === $post->post_type ) {
+		romsfun_render_emulator_field( $post->ID );
+	}
+
 	romsfun_render_screenshots_field( $post->ID );
 }
 
@@ -223,7 +270,8 @@ function romsfun_render_screenshots_field( int $post_id ): void {
  * The media modal is not loaded on every admin screen, so it has to be requested for this one.
  */
 function romsfun_admin_assets( string $hook ): void {
-	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true ) || 'rom' !== get_post_type() ) {
+	if ( ! in_array( $hook, array( 'post.php', 'post-new.php' ), true )
+		|| ! in_array( (string) get_post_type(), romsfun_meta_post_types(), true ) ) {
 		return;
 	}
 
@@ -251,7 +299,7 @@ function romsfun_save_rom_meta( int $post_id ): void {
 		return;
 	}
 
-	foreach ( romsfun_rom_fields() as $key => $field ) {
+	foreach ( romsfun_fields_for( (string) get_post_type( $post_id ) ) as $key => $field ) {
 		$input = 'rf_' . $key;
 
 		if ( ! isset( $_POST[ $input ] ) ) {
@@ -301,6 +349,7 @@ function romsfun_save_rom_meta( int $post_id ): void {
 	}
 }
 add_action( 'save_post_rom', 'romsfun_save_rom_meta' );
+add_action( 'save_post_emulator', 'romsfun_save_rom_meta' );
 
 function romsfun_get_screenshots( ?int $post_id = null ): array {
 	return array_filter( array_map( 'absint', (array) get_post_meta( $post_id ?: get_the_ID(), '_rf_screenshots', true ) ) );

@@ -43,6 +43,32 @@ function romsfun_get_breadcrumbs(): array {
 		return $crumbs;
 	}
 
+	if ( is_singular( 'emulator' ) ) {
+		$crumbs[] = array(
+			'label' => __( 'Emulators', 'romsfun' ),
+			'url'   => get_post_type_archive_link( 'emulator' ),
+		);
+
+		$consoles = get_the_terms( get_the_ID(), 'console' );
+
+		if ( $consoles && ! is_wp_error( $consoles ) ) {
+			$first    = reset( $consoles );
+			$crumbs[] = array(
+				'label' => $first->name,
+				'url'   => get_term_link( $first ),
+			);
+		}
+
+		$crumbs[] = array( 'label' => get_the_title(), 'url' => '' );
+
+		return $crumbs;
+	}
+
+	if ( is_post_type_archive( 'emulator' ) ) {
+		$crumbs[] = array( 'label' => __( 'Emulators', 'romsfun' ), 'url' => '' );
+		return $crumbs;
+	}
+
 	if ( is_tax() ) {
 		$term = get_queried_object();
 

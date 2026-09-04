@@ -25,6 +25,10 @@ function romsfun_output_schema(): void {
 		$graph[] = romsfun_schema_rom( get_the_ID() );
 	}
 
+	if ( is_singular( 'emulator' ) ) {
+		$graph[] = romsfun_schema_emulator( get_the_ID() );
+	}
+
 	if ( ! $graph ) {
 		return;
 	}
@@ -170,4 +174,68 @@ function romsfun_schema_breadcrumbs(): ?array {
 		'@id'             => home_url( add_query_arg( array() ) ) . '#breadcrumb',
 		'itemListElement' => $items,
 	);
+}
+
+/**
+ * An emulator is a plain SoftwareApplication — no VideoGame type, because it is not a game and
+ * claiming otherwise is the kind of mismatch that gets structured data ignored.
+ */
+function romsfun_schema_emulator( int $post_id ): array {
+	$schema = array(
+		'@type'               => 'SoftwareApplication',
+		'@id'                 => get_permalink( $post_id ) . '#emulator',
+		'name'                => get_the_title( $post_id ),
+		'url'                 => get_permalink( $post_id ),
+		'description'         => wp_strip_all_tags( get_the_excerpt( $post_id ) ),
+		'applicationCategory' => 'GameApplication',
+	);
+
+	if ( has_post_thumbnail( $post_id ) ) {
+		$schema['image'] = get_the_post_thumbnail_url( $post_id, 'large' );
+	}
+
+	$platforms = get_the_terms( $post_id, 'platform' );
+	if ( $platforms && ! is_wp_error( $platforms ) ) {
+		$schema['operatingSystem'] = implode( ', ', wp_list_pluck( $platforms, 'name' ) );
+	}
+
+	foreach ( array( 'version' => 'softwareVersion', 'developer' => 'author', 'license' => 'license' ) as $field => $property ) {
+		$value = romsfun_get_field( $field, $post_id );
+
+		if ( ! $value ) {
+			continue;
+		}
+
+		$schema[ $property ] = 'author' === $property
+			? array( '@type' => 'Organization', 'name' => $value )
+			: $value;
+	}
+
+	$bytes = (int) romsfun_get_field( 'file_size_bytes', $post_id );
+	if ( $bytes > 0 ) {
+		$schema['fileSize'] = romsfun_format_bytes( $bytes );
+	}
+
+	$rating_value = function_exists( 'romsfun_get_rating_average' ) ? romsfun_get_rating_average( $post_id ) : 0.0;
+	$rating_count = function_exists( 'romsfun_get_rating_count' ) ? romsfun_get_rating_count( $post_id ) : 0;
+
+	if ( $rating_value > 0 && $rating_count > 0 ) {
+		$schema['aggregateRating'] = array(
+			'@type'       => 'AggregateRating',
+			'ratingValue' => $rating_value,
+			'ratingCount' => $rating_count,
+			'bestRating'  => 5,
+			'worstRating' => 1,
+		);
+	}
+
+	$schema['offers'] = array(
+		'@type'         => 'Offer',
+		'price'         => '0',
+		'priceCurrency' => 'USD',
+		'availability'  => 'https://schema.org/InStock',
+		'url'           => get_permalink( $post_id ),
+	);
+
+	return $schema;
 }

@@ -305,3 +305,32 @@ If Rank Math, Yoast, AIOSEO, SEOPress or The SEO Framework is activated, this ou
 Two competing descriptions or two sets of Open Graph tags on a page is worse than having neither,
 and it is exactly the kind of conflict that stays invisible until someone views source and wonders
 why their social previews are wrong.
+
+## Emulator pages
+
+`single-emulator.php` mirrors the ROM page so the two read as one system, with the fields an
+emulator actually has — version, developer, licence, last updated, official site — rather than
+region and checksums.
+
+### `platform` vs `console`
+
+A second taxonomy, and the distinction matters: **`console` is what an emulator plays, `platform`
+is what it runs on.** PPSSPP emulates PSP (console) and runs on Windows, macOS, Linux and Android
+(platform). Conflating them makes both filters useless — you could no longer ask "which emulators
+run on Android" or "which emulators play PSP games" separately.
+
+Platform pills are styled green against the brand-pink console pill so the two families are
+distinguishable at a glance, using tokens so they stay legible in dark mode.
+
+### Popular ROMs for this emulator
+
+Each emulator page lists the most-downloaded ROMs for the consoles it emulates. It is the most
+useful thing on the page for a visitor who has just downloaded the emulator, and it feeds authority
+from a guide page straight back into the catalogue.
+
+### Schema
+
+Emulators emit plain `SoftwareApplication` — **not** `VideoGame`. An emulator is not a game, and
+claiming a type that does not match the page is how structured data gets ignored altogether.
+
+Ratings, screenshots and comments all work on emulator pages, sharing the same code as ROMs.

@@ -74,8 +74,31 @@ function romsfun_register_taxonomies(): void {
 		);
 	}
 
-	// Emulators are grouped by the platform they run, reusing the same console vocabulary so an
-	// emulator page and a console hub can cross-link without a second taxonomy to maintain.
+	// Emulators are grouped by the console they emulate, reusing the same vocabulary so an emulator
+	// page and a console hub cross-link without a second list to maintain.
 	register_taxonomy_for_object_type( 'console', 'emulator' );
+
+	// The operating systems an emulator runs on. Separate from `console`, which is what it plays:
+	// PPSSPP emulates PSP (console) and runs on Windows, macOS, Linux and Android (platform).
+	// Conflating the two would make both filters useless.
+	register_taxonomy(
+		'platform',
+		array( 'emulator' ),
+		array(
+			'labels'            => array(
+				'name'          => __( 'Platforms', 'romsfun' ),
+				'singular_name' => __( 'Platform', 'romsfun' ),
+				'all_items'     => __( 'All Platforms', 'romsfun' ),
+			),
+			'public'            => true,
+			'hierarchical'      => false,
+			'show_admin_column' => true,
+			'show_in_rest'      => true,
+			'rewrite'           => array(
+				'slug'       => 'platform',
+				'with_front' => false,
+			),
+		)
+	);
 }
 add_action( 'init', 'romsfun_register_taxonomies' );

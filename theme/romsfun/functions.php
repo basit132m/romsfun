@@ -120,7 +120,7 @@ function romsfun_enqueue_assets(): void {
 		wp_enqueue_script( 'comment-reply' );
 	}
 
-	if ( is_singular( 'rom' ) ) {
+	if ( is_singular( array( 'rom', 'emulator' ) ) ) {
 		$rate_path = get_template_directory() . '/assets/js/ratings.js';
 
 		wp_enqueue_script(
@@ -134,7 +134,7 @@ function romsfun_enqueue_assets(): void {
 
 	// Loaded only where it is used. Shipping a lightbox to every visitor for a feature most never
 	// open is exactly the kind of dead weight that costs a page-speed score.
-	if ( is_singular( 'rom' ) && function_exists( 'romsfun_get_screenshots' ) && romsfun_get_screenshots() ) {
+	if ( is_singular( array( 'rom', 'emulator' ) ) && function_exists( 'romsfun_get_screenshots' ) && romsfun_get_screenshots() ) {
 		$js_path = get_template_directory() . '/assets/js/lightbox.js';
 
 		wp_enqueue_script(

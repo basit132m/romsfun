@@ -20,6 +20,14 @@ const ROMSFUN_DIST_META  = '_rf_rating_dist';
 const ROMSFUN_VALUE_META = '_rf_rating_value';
 const ROMSFUN_COUNT_META = '_rf_rating_count';
 
+/**
+ * ROMs and emulators are both rateable — an emulator page is a recommendation like any other, and
+ * the rating is what makes it useful.
+ */
+function romsfun_is_rateable( int $post_id ): bool {
+	return in_array( (string) get_post_type( $post_id ), array( 'rom', 'emulator' ), true );
+}
+
 function romsfun_get_rating_distribution( ?int $post_id = null ): array {
 	$stored = get_post_meta( $post_id ?: get_the_ID(), ROMSFUN_DIST_META, true );
 	$dist   = array( 1 => 0, 2 => 0, 3 => 0, 4 => 0, 5 => 0 );
@@ -79,7 +87,7 @@ function romsfun_rating_key( int $post_id ): string {
 }
 
 function romsfun_record_rating( int $post_id, int $stars ): bool {
-	if ( $stars < 1 || $stars > 5 || 'rom' !== get_post_type( $post_id ) ) {
+	if ( $stars < 1 || $stars > 5 || ! romsfun_is_rateable( $post_id ) ) {
 		return false;
 	}
 
@@ -141,8 +149,8 @@ function romsfun_handle_rating( WP_REST_Request $request ) {
 	$post_id = (int) $request->get_param( 'post_id' );
 	$stars   = (int) $request->get_param( 'stars' );
 
-	if ( 'publish' !== get_post_status( $post_id ) || 'rom' !== get_post_type( $post_id ) ) {
-		return new WP_Error( 'romsfun_invalid_post', __( 'That ROM could not be found.', 'romsfun' ), array( 'status' => 404 ) );
+	if ( 'publish' !== get_post_status( $post_id ) || ! romsfun_is_rateable( $post_id ) ) {
+		return new WP_Error( 'romsfun_invalid_post', __( 'That page could not be found.', 'romsfun' ), array( 'status' => 404 ) );
 	}
 
 	if ( $stars < 1 || $stars > 5 ) {

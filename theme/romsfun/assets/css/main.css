@@ -28,6 +28,10 @@
 
 	--rf-wrap:         1180px;
 	--rf-gap:          24px;
+	--rf-green-text:   #0f7b45;
+	--rf-green-border: #b7e3ca;
+	--rf-green-bg:     #eafaf1;
+
 	--rf-hero-height:  520px;
 	--rf-hero-overlap: 48px;
 
@@ -47,6 +51,9 @@
 		--rf-text:       #eef1f6;
 		--rf-text-muted: #97a1b0;
 		--rf-brand-soft: #2a1220;
+		--rf-green-text: #6ee7a8;
+		--rf-green-border: #1f4a35;
+		--rf-green-bg: #11241a;
 		color-scheme: dark;
 	}
 }
@@ -58,6 +65,9 @@
 	--rf-text:       #eef1f6;
 	--rf-text-muted: #97a1b0;
 	--rf-brand-soft: #2a1220;
+	--rf-green-text: #6ee7a8;
+	--rf-green-border: #1f4a35;
+	--rf-green-bg: #11241a;
 	color-scheme: dark;
 }
 
@@ -149,6 +159,9 @@ h3 { font-size: 1rem; }
 	color: var(--rf-text-muted); background: var(--rf-bg); white-space: nowrap;
 }
 .rf-pill:hover { text-decoration: none; border-color: var(--rf-brand); color: var(--rf-brand); }
+/* Platform pills read as a distinct family from the brand-pink console pill. Tokenised rather
+   than hardcoded so they stay legible when the palette flips to dark. */
+.rf-pill--platform { color: var(--rf-green-text); border-color: var(--rf-green-border); background: var(--rf-green-bg); }
 .rf-pill--console { color: var(--rf-brand); border-color: color-mix(in srgb, var(--rf-brand) 35%, transparent); background: var(--rf-brand-soft); }
 
 /* ---------- Buttons ---------- */
@@ -199,6 +212,8 @@ h3 { font-size: 1rem; }
 /* ---------- Cards / grids ---------- */
 
 .rf-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); }
+.rf-grid--wide { grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); }
+.rf-card__media--square { aspect-ratio: 16 / 10; }
 
 .rf-card { background: var(--rf-surface); border: 1px solid var(--rf-border); border-radius: var(--rf-radius); overflow: hidden; display: flex; flex-direction: column; }
 .rf-card:hover { border-color: color-mix(in srgb, var(--rf-brand) 45%, transparent); }
