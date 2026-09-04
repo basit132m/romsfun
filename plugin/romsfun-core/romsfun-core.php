@@ -29,6 +29,7 @@ require_once ROMSFUN_CORE_PATH . 'includes/ratings.php';
 require_once ROMSFUN_CORE_PATH . 'includes/comments.php';
 require_once ROMSFUN_CORE_PATH . 'includes/site-verification.php';
 require_once ROMSFUN_CORE_PATH . 'includes/meta-tags.php';
+require_once ROMSFUN_CORE_PATH . 'includes/seo-plugin-fixes.php';
 
 /**
  * Rewrite rules are expensive to regenerate, so we only flush on activation and deactivation —

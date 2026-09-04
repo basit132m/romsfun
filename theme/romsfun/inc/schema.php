@@ -23,11 +23,23 @@ function romsfun_output_schema(): void {
 	$done  = true;
 	$graph = array();
 
-	$graph[] = romsfun_schema_website();
+	/*
+	 * When Yoast, Rank Math or similar is active it already emits WebSite and BreadcrumbList.
+	 * Emitting our own alongside puts two BreadcrumbLists on the page, which is itself invalid —
+	 * Search Console reports the pair and neither earns the rich result.
+	 *
+	 * The ROM and emulator entities are still ours: no general SEO plugin produces VideoGame or
+	 * SoftwareApplication markup, so those remain additive rather than duplicated.
+	 */
+	$seo_plugin = function_exists( 'romsfun_seo_plugin_active' ) && romsfun_seo_plugin_active();
 
-	$breadcrumbs = romsfun_schema_breadcrumbs();
-	if ( $breadcrumbs ) {
-		$graph[] = $breadcrumbs;
+	if ( ! $seo_plugin ) {
+		$graph[] = romsfun_schema_website();
+
+		$breadcrumbs = romsfun_schema_breadcrumbs();
+		if ( $breadcrumbs ) {
+			$graph[] = $breadcrumbs;
+		}
 	}
 
 	if ( is_singular( 'rom' ) ) {
