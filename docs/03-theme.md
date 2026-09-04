@@ -249,3 +249,32 @@ a bulk-imported catalogue still offers the right emulator without anyone setting
 The button links to the emulator's **page**, not straight to a file. It keeps the visitor on site
 and it is an internal link into a page that needs the equity — emulator pages capture "how to play
 X" intent and are worth ranking in their own right.
+
+## Site verification & header code
+
+**Settings → RomsFun SEO.** Fields for Google Search Console, Bing, Yandex and Pinterest, plus
+header and footer code boxes for analytics and ad tags.
+
+Two details that matter:
+
+**It accepts the whole meta tag or just the token.** People paste
+`<meta name="google-site-verification" content="TOKEN">` far more often than the bare token, and a
+tag stored inside a tag fails verification silently with nothing to see in the page source. The
+saved value is parsed either way.
+
+**Saving purges the caches automatically.** The tag has to be visible to the crawler, and the page
+it needs to appear on is almost certainly sitting in Varnish or Cloudflare at that moment. Without
+the purge, verification fails and the reason is invisible.
+
+The header/footer code boxes render only for users with `unfiltered_html` (administrators on a
+single site), and their contents are output verbatim — that is the point of them, and it is why
+they are gated.
+
+### Prefer a Domain property
+
+DNS is on Cloudflare, so Search Console's **Domain** property is the better route: add the TXT
+record it gives you rather than using the meta tag.
+
+A Domain property covers http and https, www and non-www, and every subdomain in one place —
+otherwise the same site reports as up to four separate properties with the data split between them.
+It also cannot be broken by a theme change or a caching layer serving a stale page.
