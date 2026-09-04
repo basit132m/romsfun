@@ -12,6 +12,15 @@
 defined( 'ABSPATH' ) || exit;
 
 function romsfun_output_schema(): void {
+	// Belt and braces against a second block being emitted if wp_head ever runs twice (some
+	// caching and page-builder setups do). Two BreadcrumbLists on a page is a validation error.
+	static $done = false;
+
+	if ( $done ) {
+		return;
+	}
+
+	$done  = true;
 	$graph = array();
 
 	$graph[] = romsfun_schema_website();
@@ -153,25 +162,33 @@ function romsfun_schema_breadcrumbs(): ?array {
 		return null;
 	}
 
-	$items = array();
+	$current = is_singular() ? get_permalink() : home_url( add_query_arg( array() ) );
+	$items   = array();
 
 	foreach ( array_values( $crumbs ) as $i => $crumb ) {
-		$item = array(
+		/*
+		 * `item` is emitted on every element, including the last.
+		 *
+		 * The spec calls it optional on the final crumb, but Search Console reports the omission
+		 * as "Missing field 'item'" and marks the whole BreadcrumbList invalid — which costs the
+		 * breadcrumb rich result. Supplying the page's own URL is valid, and it is what the major
+		 * SEO plugins do for exactly this reason.
+		 *
+		 * The visible trail still renders the last crumb as plain text; only the markup differs.
+		 */
+		$items[] = array(
 			'@type'    => 'ListItem',
 			'position' => $i + 1,
 			'name'     => $crumb['label'],
+			'item'     => ! empty( $crumb['url'] ) ? $crumb['url'] : $current,
 		);
-
-		if ( ! empty( $crumb['url'] ) ) {
-			$item['item'] = $crumb['url'];
-		}
-
-		$items[] = $item;
 	}
 
 	return array(
 		'@type'           => 'BreadcrumbList',
-		'@id'             => home_url( add_query_arg( array() ) ) . '#breadcrumb',
+		// Named so it does not show as "Unnamed item" in Search Console's report.
+		'name'            => __( 'Breadcrumb', 'romsfun' ),
+		'@id'             => $current . '#breadcrumb',
 		'itemListElement' => $items,
 	);
 }
