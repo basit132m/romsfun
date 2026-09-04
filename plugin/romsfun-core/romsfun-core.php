@@ -26,6 +26,7 @@ require_once ROMSFUN_CORE_PATH . 'includes/permalinks.php';
 require_once ROMSFUN_CORE_PATH . 'includes/fields.php';
 require_once ROMSFUN_CORE_PATH . 'includes/cache.php';
 require_once ROMSFUN_CORE_PATH . 'includes/ratings.php';
+require_once ROMSFUN_CORE_PATH . 'includes/comments.php';
 
 /**
  * Rewrite rules are expensive to regenerate, so we only flush on activation and deactivation —

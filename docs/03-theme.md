@@ -218,3 +218,34 @@ action is always reflected.
 Enabled on the `rom` post type, rendered by `comments.php` at the end of the ROM page. Threaded,
 paginated, styled to match. Remember they are switched off globally in
 **Settings → Discussion** — enable them there, or per-ROM in the editor.
+
+## Comment policy — no links
+
+A ROM site attracts heavy automated link-drop spam. Links in user comments are both an SEO
+liability (you vouch for whatever gets posted) and a safety one (visitors trust links on your
+pages). Rather than moderate that stream forever, links are not permitted at all.
+
+Enforced in four places, because any one alone leaves a gap:
+
+1. **Rejected on submission** — the pattern catches `http://`, `www.`, raw `<a` tags, BBCode `[url`,
+   and bare domains like `example.com`, which is how spam arrives once a naive `http://` check
+   is in place
+2. **The website field is removed** from the form — the best way to stop people filling it in is
+   not to ask
+3. **`make_clickable` is unhooked** so bare URLs in existing comments never become links
+4. **Anchors are stripped on output**, covering anything already in the database
+
+Editors and administrators are exempt, so they can link to a related ROM when answering someone.
+
+## Download Emulator button
+
+Sits beside Download ROM. The emulator is chosen per-ROM from a dropdown of **published emulator
+posts** — a real relation, not free text, so the button always points somewhere that exists.
+
+Left on **Auto**, it falls back to an emulator sharing the ROM's console. That matters at scale:
+a bulk-imported catalogue still offers the right emulator without anyone setting the field on
+70,000 entries.
+
+The button links to the emulator's **page**, not straight to a file. It keeps the visitor on site
+and it is an internal link into a page that needs the equity — emulator pages capture "how to play
+X" intent and are worth ranking in their own right.

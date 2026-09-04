@@ -100,7 +100,51 @@ function romsfun_render_rom_meta_box( WP_Post $post ): void {
 
 	echo '</div>';
 
+	romsfun_render_emulator_field( $post->ID );
 	romsfun_render_screenshots_field( $post->ID );
+}
+
+/**
+ * Emulator picker.
+ *
+ * A relation to a published `emulator` post rather than a free-text field, so the Download
+ * Emulator button always points at a page that exists and the two post types stay linked for
+ * internal linking.
+ */
+function romsfun_render_emulator_field( int $post_id ): void {
+	$selected = (int) get_post_meta( $post_id, '_rf_emulator', true );
+
+	$emulators = get_posts(
+		array(
+			'post_type'      => 'emulator',
+			'post_status'    => 'publish',
+			'posts_per_page' => 200,
+			'orderby'        => 'title',
+			'order'          => 'ASC',
+		)
+	);
+	?>
+	<hr style="margin:20px 0">
+	<p style="font-weight:600;margin-bottom:6px"><?php esc_html_e( 'Recommended Emulator', 'romsfun' ); ?></p>
+
+	<?php if ( $emulators ) : ?>
+		<select name="rf_emulator" style="max-width:420px;width:100%">
+			<option value="0"><?php esc_html_e( '— Auto (match by console) —', 'romsfun' ); ?></option>
+			<?php foreach ( $emulators as $emulator ) : ?>
+				<option value="<?php echo esc_attr( $emulator->ID ); ?>" <?php selected( $selected, $emulator->ID ); ?>>
+					<?php echo esc_html( $emulator->post_title ); ?>
+				</option>
+			<?php endforeach; ?>
+		</select>
+		<p class="description">
+			<?php esc_html_e( 'Shown as the "Download Emulator" button. On Auto, the newest published emulator sharing this ROM\'s console is used.', 'romsfun' ); ?>
+		</p>
+	<?php else : ?>
+		<p class="description">
+			<?php esc_html_e( 'No emulators published yet. Add some under Emulators, give each one a Console, and they will appear here.', 'romsfun' ); ?>
+		</p>
+	<?php endif; ?>
+	<?php
 }
 
 /**
@@ -236,6 +280,16 @@ function romsfun_save_rom_meta( int $post_id ): void {
 		update_post_meta( $post_id, '_rf_' . $key, $value );
 	}
 
+	if ( isset( $_POST['rf_emulator'] ) ) {
+		$emulator_id = absint( wp_unslash( $_POST['rf_emulator'] ) );
+
+		if ( $emulator_id && 'emulator' === get_post_type( $emulator_id ) ) {
+			update_post_meta( $post_id, '_rf_emulator', $emulator_id );
+		} else {
+			delete_post_meta( $post_id, '_rf_emulator' );
+		}
+	}
+
 	if ( isset( $_POST['rf_screenshots'] ) ) {
 		$ids = array_values( array_filter( array_map( 'absint', explode( ',', sanitize_text_field( wp_unslash( $_POST['rf_screenshots'] ) ) ) ) ) );
 
@@ -272,4 +326,44 @@ function romsfun_format_bytes( $bytes ): string {
 
 function romsfun_get_field( string $key, ?int $post_id = null ) {
 	return get_post_meta( $post_id ?: get_the_ID(), '_rf_' . $key, true );
+}
+
+/**
+ * Resolve the emulator to offer alongside a ROM.
+ *
+ * An explicit selection wins. Otherwise fall back to an emulator sharing the ROM's console, so a
+ * catalogue imported in bulk still offers the right emulator without anyone setting it by hand on
+ * 70,000 entries.
+ */
+function romsfun_get_rom_emulator( ?int $post_id = null ): ?WP_Post {
+	$post_id  = $post_id ?: get_the_ID();
+	$explicit = (int) get_post_meta( $post_id, '_rf_emulator', true );
+
+	if ( $explicit && 'publish' === get_post_status( $explicit ) ) {
+		return get_post( $explicit );
+	}
+
+	$consoles = wp_get_post_terms( $post_id, 'console', array( 'fields' => 'ids' ) );
+
+	if ( empty( $consoles ) || is_wp_error( $consoles ) ) {
+		return null;
+	}
+
+	$matches = get_posts(
+		array(
+			'post_type'      => 'emulator',
+			'post_status'    => 'publish',
+			'posts_per_page' => 1,
+			'no_found_rows'  => true,
+			'tax_query'      => array(
+				array(
+					'taxonomy' => 'console',
+					'field'    => 'term_id',
+					'terms'    => $consoles,
+				),
+			),
+		)
+	);
+
+	return $matches ? $matches[0] : null;
 }

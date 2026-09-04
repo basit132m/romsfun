@@ -21,7 +21,6 @@ while ( have_posts() ) :
 	$download_url = romsfun_get_field( 'download_url' );
 	$release      = romsfun_get_field( 'release_date' );
 
-	romsfun_breadcrumbs();
 	?>
 
 	<article <?php post_class(); ?>>
@@ -41,6 +40,8 @@ while ( have_posts() ) :
 			</div>
 
 			<div class="rf-rom-hero__body rf-card-surface">
+
+				<?php romsfun_breadcrumbs(); ?>
 
 				<h1 class="rf-rom-hero__title"><?php the_title(); ?></h1>
 
@@ -138,6 +139,27 @@ while ( have_posts() ) :
 								<path d="M12 3v12m0 0 4-4m-4 4-4-4M4 21h16"/>
 							</svg>
 							<span class="rf-btn__label"><?php echo esc_html( romsfun_get_option( 'download_label' ) ); ?></span>
+						</a>
+					<?php endif; ?>
+
+					<?php
+					$emulator = function_exists( 'romsfun_get_rom_emulator' ) ? romsfun_get_rom_emulator( $post_id ) : null;
+
+					// Links to the emulator's own page rather than straight to a file: it keeps the
+					// visitor on site, and it is an internal link into a page that needs the equity.
+					if ( $emulator ) :
+						?>
+						<a class="rf-btn rf-btn--secondary" href="<?php echo esc_url( get_permalink( $emulator ) ); ?>">
+							<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+								<rect x="2" y="7" width="20" height="12" rx="4"/><path d="M7 11v4M5 13h4M16 12h.01M18.5 14.5h.01"/>
+							</svg>
+							<?php
+							printf(
+								/* translators: %s: emulator name */
+								esc_html__( 'Download %s', 'romsfun' ),
+								esc_html( get_the_title( $emulator ) )
+							);
+							?>
 						</a>
 					<?php endif; ?>
 				</div>
